@@ -1,10 +1,7 @@
-type Site = {
-  siteId: string;
-  special: string;
-  length: number;
-  revision: number;
-}
+import type { Site } from './types';
 
+import { Paz } from './Paz';
+import getPoemLine from './astro';
 
 type PazElements = {
   master: HTMLInputElement;
@@ -18,10 +15,11 @@ type PazElements = {
   uiExtrasContainer: HTMLDivElement;
   btnImport: HTMLButtonElement;
   btnExport: HTMLButtonElement;
+  tipClip: HTMLDivElement;
 }
 
 
-class Paz {
+class PazUI {
   private elements: PazElements;
   constructor() {
     this.elements = {
@@ -36,16 +34,18 @@ class Paz {
       uiExtrasContainer: document.getElementById('ui-extras-container') as HTMLDivElement,
       btnImport: document.getElementById('btn-import') as HTMLButtonElement,
       btnExport: document.getElementById('btn-export') as HTMLButtonElement,
+      tipClip: document.getElementById('tip-clip') as HTMLDivElement,
     };
     this.elements.master.addEventListener('input', () => this.computeHash());
     this.elements.site.addEventListener('input', () => this.computeHash());
     this.elements.special.addEventListener('input', () => this.computeHash());
     this.elements.length.addEventListener('input', () => this.computeHash());
     this.elements.revision.addEventListener('input', () => this.computeHash());
-    this.elements.replication.addEventListener('input', () => this.replicationInput());
+    this.elements.replication.addEventListener('input', () => this.import());
 
     // Set default values
     this.elements.master.value = '';
+    this.elements.master.placeholder = getPoemLine();
     this.elements.site.value = '';
     this.elements.length.value = '16';
     this.elements.revision.value = '1';
@@ -67,34 +67,26 @@ class Paz {
         this.elements.replication.style.display = 'none';
       }
     });
+
+    this.elements.hash.addEventListener('click', () => {
+      if (!this.elements.hash.value || this.elements.hash.value === '') {
+        return
+      };
+      this.elements.hash.select();
+      document.execCommand('copy');
+      this.elements.tipClip.innerText = 'Password copied to clipboard!';
+      this.elements.tipClip.style.display = 'block';
+    });
   }
-  private async hash(master: string, site: Site): Promise<string> {
-    // Combine all relevant fields for deterministic hashing
-    const input = `${master}:${site.siteId}:${site.special}:${site.length}:${site.revision}`;
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    // Convert buffer to hex string
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    // Truncate to desired length
-    // Return only the first 'length' characters
-    // Assuming length is in characters, not bytes
-    const truncatedHash = hashHex.slice(0, site.length);
-    // Repace the end of the hash with special characters if provided
-    if (site.special) {
-      const specialLength = site.special.length;
-      return truncatedHash.slice(0, -specialLength) + site.special;
-    }
-    return truncatedHash;
-  }
-  public replicationInput(): void {
+  public import(): void {
     const replicationValue = this.elements.replication.value;
     const replicationJSON = JSON.parse(replicationValue);
     this.elements.site.value = replicationJSON.domain;
     this.elements.special.value = replicationJSON.special;
     this.elements.length.value = replicationJSON.length.toString();
     this.elements.revision.value = replicationJSON.revision.toString();
+    this.elements.tipClip.innerText = 'Imported replication data.';
+    this.elements.tipClip.style.display = 'block';
     this.computeHash();
   }
   public async computeHash(): Promise<void> {
@@ -106,12 +98,42 @@ class Paz {
       revision: parseInt(this.elements.revision.value, 10),
     };
     const master = this.elements.master.value;
-    const hash = await this.hash(master, site);
+    let hash = '';
+    if (master || master !== '') {
+      hash = await Paz.hash(master, site);
+    }
+    else {
+      hash = '';
+    }
     console.log('Site data:', site);
     console.log('Computed hash:', hash);
     this.elements.hash.value = hash;
     this.elements.replication.value = JSON.stringify(site, null, 2);
   }
+  public show(elementId: string): void {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    if (element.style.display === 'none' || element.style.display === '') {
+      element.style.display = 'block';
+    }
+    else {
+      element.style.display = 'none';
+    }
+  }
+  public clear(elementId: string): void {
+    const element = document.getElementById(elementId) as HTMLInputElement;
+    if (element) {
+      element.value = '';
+    }
+  }
 }
 
-new Paz();
+const pazui = new PazUI();
+// Declare a global variable for Asa
+declare global {
+  interface Window {
+    pazui: typeof pazui;
+  }
+}
+window.pazui = pazui;
+

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOPAZ</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <h1><i class="fa-solid fa-eye"></i> NOPAZ</h1>
+    <div class="tip" style="display: block;">
+      <strong><i class="fa-solid fa-unlock"></i> No account, no vault, no worries.</strong>
+      <br />
+      <i>An account-less, vault-less, cloud-less password manager for humans.</i>
+    </div>
+    <div style="display: flex; width: 100%; margin-top: 10px;">
+      <button id="btn-import" title="load"><i class="fa-solid fa-upload"></i></button>
+      <button id="btn-export" title="save"><i class="fa-solid fa-book"></i></button>
+      <button id="btn-view" title="show / hide sensitive info"><i class="fa-solid fa-eye"></i></button>
+    </div>
+    <label for="in-master"><i class="fa-solid fa-key"></i> Your Passphrase</label>
+    <span class="tool-area">
+      <div onclick="pazui.clear('in-master')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
+      </div>
+      <div onclick="pazui.show('tip-master')" class="btn-tool btn-tool-tip" title="help"><i
+          class="fa-solid fa-question"></i></div>
+    </span>
+    <div id="tip-master" class="tip">
+      Use a long, memorable passphrase. Example: "The quick brown fox jumps over the lazy dog"
+    </div>
+    <input id="in-master" type="text" placeholder="The quick brown fox jumps over the lazy dog" />
+    <label for="in-site"><i class="fa-solid fa-id-card"></i> Site Name</label>
+    <span class="tool-area">
+      <div onclick="pazui.clear('in-site')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
+      </div>
+      <div onclick="pazui.show('tip-site')" class="btn-tool btn-tool-tip" title="help"><i
+          class="fa-solid fa-question"></i></div>
+    </span>
+    <div id="tip-site" class="tip">
+      The unique identifier for the site or service (e.g., example.com). This helps generate different passwords for
+      different sites.
+    </div>
+    <input id="in-site" type="text" placeholder="example.com" />
+    <button id="btn-extras" for="ui-extras-container">Details</button>
+    <div id="ui-extras-container">
+      <label for="in-length"><i class="fa-solid fa-hashtag"></i> Password Length</label>
+      <span class="tool-area">
+        <div onclick="pazui.show('tip-length')" class="btn-tool btn-tool-tip" title="help"><i
+            class="fa-solid fa-question"></i></div>
+      </span>
+      <div id="tip-length" class="tip">
+        Choose a length between 8 and 64 characters. Longer passwords are generally more secure but some sites have
+        limits on password length.
+      </div>
+      <input id="in-length" type="number" placeholder="Length" min="1" max="64" />
+      <label for="in-special"><i class="fa-solid fa-clipboard-question"></i> Special</label>
+      <span class="tool-area">
+        <div onclick="pazui.show('tip-special')" class="btn-tool btn-tool-tip" title="help"><i
+            class="fa-solid fa-question"></i>
+        </div>
+      </span>
+      <div id="tip-special" class="tip">
+        Some sites have restrictions on special characters. Choose the appropriate option based on the site's
+        requirements.
+      </div>
+      <select id="in-special">
+        <option value="all">Normal (Abc123!?)</option>
+        <option value="upper">Uppercase (A)</option>
+        <option value="num">Numbers (123)</option>
+        <option value="">None</option>
+      </select>
+      <label for="in-revision"><i class="fa-solid fa-asterisk"></i> Revision</label>
+      <span class="tool-area">
+        <div onclick="pazui.show('tip-revision')" class="btn-tool btn-tool-tip" title="help"><i
+            class="fa-solid fa-question"></i>
+        </div>
+      </span>
+      <div id="tip-revision" class="tip">
+        Increment the revision number if you need to change your password for a site. This will generate a new password
+        while keeping the same passphrase and site identifier.
+      </div>
+      <input id="in-revision" type="number" placeholder="Revision" min="0" />
+    </div>
+    <hr \>
+    <label for="out-hash" style="margin-top: 0;"><i class="fa-solid fa-unlock"></i> Your Password</label>
+    <span class="tool-area">
+      <div onclick="pazui.show('tip-hash')" class="btn-tool btn-tool-tip" title="help"><i
+          class="fa-solid fa-question"></i></div>
+    </span>
+    <div id="tip-hash" class="tip">
+      This password is generated locally in your browser and is not sent to any server. Make sure to remember your
+      passphrase and site identifier to regenerate it in the future.
+    </div>
+    <input id="out-hash" type="text" placeholder="Waiting to generate" readonly />
+    <br />
+    <div id="tip-clip" class="tip tip-strong">
+      CLIPBOARD
+    </div>
+    <textarea id="io-replication" rows="7" cols="50">
+    </textarea>
+  </div>
+</body>
+
+
+<script src="bundle.js"></script>
+
+<style>
+  /* Import font */
+  @font-face {
+    font-family: 'Agave';
+    src: url('./font/agave.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  :root {
+    --input-bg: #333333;
+    --input-color: #ffffff;
+    --text2: #cccccc;
+    --btn1: #474047;
+    --btn2: #504450;
+    --btn3: #584458;
+    --btn-hover: #665566;
+    --tip: #88ff88;
+    --tip-bg: #88998855;
+    --warn: #ff8888;
+    --red: #ff4444;
+    --round: 0.5rem;
+  }
+
+  .warn {
+    color: var(--warn);
+  }
+
+  * {
+    font-family: Arial, sans-serif;
+    font-family: 'Agave', sans-serif;
+  }
+
+  html {
+    /* background gradient */
+    background: linear-gradient(135deg, #222222, #222233);
+    color: var(--input-color);
+    min-height: 100%;
+  }
+
+  body {
+    margin: 20px;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 0.2em;
+  }
+
+  #app {
+    max-width: 400px;
+    margin: auto;
+  }
+
+  label {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--btn3);
+    color: var(--input-color);
+    border: none;
+    cursor: pointer;
+    border-radius: var(--round);
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: var(--btn-hover);
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--input-color);
+    border: none;
+    border-radius: var(--round);
+  }
+
+  select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--input-color);
+    border: none;
+    border-radius: var(--round);
+  }
+
+  textarea {
+    margin-top: 10px;
+    width: 400px;
+    box-sizing: border-box;
+    padding: 1rem;
+    background-color: var(--input-bg);
+    color: var(--input-color);
+    border: none;
+    border-radius: var(--round);
+  }
+
+  label .fa-solid {
+    min-width: 1rem;
+    opacity: 0.6;
+  }
+
+  .tool-area {
+    margin-top: 10px;
+    float: right;
+    font-size: 0.9em;
+    color: #888888;
+  }
+
+  .btn-tool {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 6px;
+    color: var(--input-color);
+    border-radius: var(--round);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+  }
+
+  .btn-tool:hover {
+    color: var(--red);
+    opacity: 1;
+  }
+
+  .btn-tool-tip:hover {
+    color: var(--tip);
+    opacity: 1;
+  }
+
+  @keyframes tip-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 0.8;
+    }
+  }
+
+  .tip {
+    border-left: 4px solid var(--tip);
+    margin: 10px 0;
+    padding-left: 10px;
+    font-size: 0.7em;
+    opacity: 0.8;
+    line-height: 1.4em;
+    display: none;
+    animation: tip-in 0.5s ease;
+  }
+
+  .tip-strong {
+    font-weight: bold;
+    background-color: var(--tip-bg);
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  #out-hash {
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 1rem;
+    cursor: pointer;
+  }
+
+  #in-special {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+  }
+
+  #btn-extras {
+    width: 100%;
+    padding: 6px;
+    background-color: var(--btn1);
+    color: var(--text2);
+  }
+
+  #btn-extras:hover {
+    background-color: var(--btn-hover);
+    opacity: 1;
+  }
+
+  @keyframes extras-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  #ui-extras-container {
+    display: none;
+    animation: extras-in 0.5s ease;
+  }
+
+  #io-replication {
+    display: none;
+  }
+
+  #btn-view,
+  #btn-import,
+  #btn-export {
+    width: 33.333%;
+  }
+
+  #btn-import {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: var(--btn1);
+  }
+
+  #btn-import:hover {
+    background-color: var(--btn-hover);
+  }
+
+  #btn-export {
+    border-radius: 0;
+    background-color: var(--btn2);
+  }
+
+  #btn-export:hover {
+    background-color: var(--btn-hover);
+  }
+
+  #btn-view {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: var(--btn3);
+  }
+
+  #btn-view:hover {
+    background-color: var(--btn-hover);
+  }
+
+
+  #btn-import {
+    float: left;
+  }
+
+  /* Hide input controls */
+
+  /* Chrome, Safari, Edge, Opera */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>
