@@ -45,7 +45,9 @@
       different sites.
     </div>
     <input id="in-site" type="text" placeholder="example.com" />
-    <button id="btn-extras" for="ui-extras-container">Details</button>
+    <button id="btn-extras" for="ui-extras-container">
+      <i class="fa-solid fa-circle-info"></i> Details
+      <span class="acc-arrow" id="btn-extras-arrow"><i class="fa-solid fa-chevron-down"></i></span></button>
     <div id="ui-extras-container">
       <label for="in-length"><i class="fa-solid fa-hashtag"></i> Password Length</label>
       <span class="tool-area">
@@ -68,10 +70,10 @@
         requirements.
       </div>
       <select id="in-special">
-        <option value="all">Normal (Abc123!?)</option>
-        <option value="upper">Uppercase (A)</option>
-        <option value="num">Numbers (123)</option>
-        <option value="">None</option>
+        <option value="all">All (PassWord123!?)</option>
+        <option value="upper">Uppercase (Password)</option>
+        <option value="num">Numbers (password123)</option>
+        <option value="">None (password)</option>
       </select>
       <label for="in-revision"><i class="fa-solid fa-asterisk"></i> Revision</label>
       <span class="tool-area">
@@ -182,6 +184,11 @@
     background-color: var(--btn-hover);
   }
 
+  button .fa-solid {
+    min-width: 1rem;
+    opacity: 0.6;
+  }
+
   input {
     width: 100%;
     padding: 8px;
@@ -218,6 +225,10 @@
   label .fa-solid {
     min-width: 1rem;
     opacity: 0.6;
+  }
+
+  .fa-solid {
+    vertical-align: middle;
   }
 
   .tool-area {
@@ -295,6 +306,12 @@
     padding: 6px;
     background-color: var(--btn1);
     color: var(--text2);
+    text-align: left;
+  }
+
+  .acc-arrow {
+    float: right;
+    transition: transform 0.3s ease;
   }
 
   #btn-extras:hover {
@@ -330,6 +347,7 @@
   #btn-import {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
     background-color: var(--btn1);
   }
 
@@ -349,6 +367,7 @@
   #btn-view {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     background-color: var(--btn3);
   }
 

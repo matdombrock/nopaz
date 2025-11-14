@@ -12,6 +12,7 @@ type PazUIElements = {
   hash: HTMLInputElement;
   replication: HTMLInputElement;
   btnExtras: HTMLButtonElement;
+  btnExtrasArrow: HTMLSpanElement;
   uiExtrasContainer: HTMLDivElement;
   btnImport: HTMLButtonElement;
   btnExport: HTMLButtonElement;
@@ -32,6 +33,7 @@ class PazUI {
       hash: document.getElementById('out-hash') as HTMLInputElement,
       replication: document.getElementById('io-replication') as HTMLInputElement,
       btnExtras: document.getElementById('btn-extras') as HTMLButtonElement,
+      btnExtrasArrow: document.getElementById('btn-extras-arrow') as HTMLSpanElement,
       uiExtrasContainer: document.getElementById('ui-extras-container') as HTMLDivElement,
       btnImport: document.getElementById('btn-import') as HTMLButtonElement,
       btnExport: document.getElementById('btn-export') as HTMLButtonElement,
@@ -59,8 +61,10 @@ class PazUI {
     this.elements.btnExtras.addEventListener('click', () => {
       if (this.elements.uiExtrasContainer.style.display === 'none' || this.elements.uiExtrasContainer.style.display === '') {
         this.elements.uiExtrasContainer.style.display = 'block';
+        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
       } else {
         this.elements.uiExtrasContainer.style.display = 'none';
+        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
       }
     });
 

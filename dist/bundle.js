@@ -55,6 +55,7 @@ class PazUI {
       hash: document.getElementById("out-hash"),
       replication: document.getElementById("io-replication"),
       btnExtras: document.getElementById("btn-extras"),
+      btnExtrasArrow: document.getElementById("btn-extras-arrow"),
       uiExtrasContainer: document.getElementById("ui-extras-container"),
       btnImport: document.getElementById("btn-import"),
       btnExport: document.getElementById("btn-export"),
@@ -78,8 +79,10 @@ class PazUI {
     this.elements.btnExtras.addEventListener("click", () => {
       if (this.elements.uiExtrasContainer.style.display === "none" || this.elements.uiExtrasContainer.style.display === "") {
         this.elements.uiExtrasContainer.style.display = "block";
+        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
       } else {
         this.elements.uiExtrasContainer.style.display = "none";
+        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
       }
     });
     this.elements.btnExport.addEventListener("click", () => {
