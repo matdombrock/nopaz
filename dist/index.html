@@ -19,8 +19,8 @@
     </div>
     <div style="display: flex; width: 100%; margin-top: 10px;">
       <button id="btn-view" title="show / hide sensitive info"><i class="fa-solid fa-eye"></i></button>
-      <button id="btn-export" title="save backup"><i class="fa-solid fa-bookmark"></i></button>
-      <button id="btn-reset" title="reset"><i class="fa-solid fa-shower"></i></button>
+      <button id="btn-bookmark" title="save backup"><i class="fa-solid fa-bookmark"></i></button>
+      <button id="btn-reset" title="reset"><i class="fa-solid fa-skull"></i></button>
     </div>
     <div id="tip-clip" class="tip tip-strong">
       CLIPBOARD
@@ -28,7 +28,7 @@
     <textarea id="io-replication" rows="4" cols="50"></textarea>
     <label for="in-master"><i class="fa-solid fa-key"></i> Your Passphrase</label>
     <span class="tool-area">
-      <div onclick="pazui.clear('in-master')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
+      <div onclick="pazui.clear('in-master')" class="btn-tool" title="clear input"><i class="fa-solid fa-xmark"></i>
       </div>
       <div onclick="pazui.showTip('tip-master')" class="btn-tool btn-tool-tip" title="help"><i
           class="fa-solid fa-question"></i></div>
@@ -39,7 +39,7 @@
     <input id="in-master" type="text" placeholder="The quick brown fox jumps over the lazy dog" />
     <label for="in-site"><i class="fa-solid fa-id-card"></i> Site Name</label>
     <span class="tool-area">
-      <div onclick="pazui.clear('in-site')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
+      <div onclick="pazui.clear('in-site')" class="btn-tool" title="clear input"><i class="fa-solid fa-xmark"></i>
       </div>
       <div onclick="pazui.showTip('tip-site')" class="btn-tool btn-tool-tip" title="help"><i
           class="fa-solid fa-question"></i></div>
@@ -131,7 +131,7 @@
     --tip: #88ff88;
     --tip-bg: #88998855;
     --warn: #ff8888;
-    --red: #ff4444;
+    --red: #ff9999;
     --round: 0.5rem;
   }
 
@@ -248,13 +248,13 @@
     color: var(--input-color);
     border-radius: var(--round);
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.3;
     transition: all 0.3s ease;
   }
 
   .btn-tool:hover {
     color: var(--red);
-    opacity: 1;
+    opacity: 0.8;
   }
 
   .btn-tool-tip:hover {
@@ -343,7 +343,7 @@
 
   #btn-reset,
   #btn-view,
-  #btn-export {
+  #btn-bookmark {
     width: 33.333%;
   }
 
@@ -358,12 +358,12 @@
     background-color: var(--btn-hover);
   }
 
-  #btn-export {
+  #btn-bookmark {
     border-radius: 0;
     background-color: var(--btn2);
   }
 
-  #btn-export:hover {
+  #btn-bookmark:hover {
     background-color: var(--btn-hover);
   }
 

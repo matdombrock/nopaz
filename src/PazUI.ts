@@ -15,6 +15,7 @@ type PazUIElements = {
   btnExtrasArrow: HTMLSpanElement;
   uiExtrasContainer: HTMLDivElement;
   btnView: HTMLButtonElement;
+  btnBookmark: HTMLButtonElement;
   btnReset: HTMLButtonElement;
   tipClip: HTMLDivElement;
   tipClipBtn: HTMLDivElement;
@@ -36,6 +37,7 @@ class PazUI {
       btnExtrasArrow: document.getElementById('btn-extras-arrow') as HTMLSpanElement,
       uiExtrasContainer: document.getElementById('ui-extras-container') as HTMLDivElement,
       btnView: document.getElementById('btn-view') as HTMLButtonElement,
+      btnBookmark: document.getElementById('btn-bookmark') as HTMLButtonElement,
       btnReset: document.getElementById('btn-reset') as HTMLButtonElement,
       tipClip: document.getElementById('tip-clip') as HTMLDivElement,
       tipClipBtn: document.getElementById('tip-clip-btm') as HTMLDivElement,
@@ -78,16 +80,26 @@ class PazUI {
       this.elements.hash.select();
       document.execCommand('copy');
       this.elements.tipClipBtn.innerHTML = `
-        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>
-        <br><br> 
-        Use the <i class="fa-solid fa-book"></i> button to make a backup of your site settings.
-        <br>
-        Use the <i class="fa-solid fa-paste"></i> button to load these settings later.`;
+        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>`;
       this.elements.tipClipBtn.style.display = 'block';
     });
 
+    // Bookmark site settings
+    this.elements.btnBookmark.addEventListener('click', () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('site', this.elements.site.value);
+      url.searchParams.set('special', this.elements.special.value);
+      url.searchParams.set('length', this.elements.length.value);
+      url.searchParams.set('revision', this.elements.revision.value);
+      navigator.clipboard.writeText(url.toString());
+      this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
+      <br><br>
+      Use ctrl/cmd + D to bookmark it in your browser!`;
+      this.elements.tipClip.style.display = 'block';
+    });
+
     // Clear inputs
-    this.elements.btnReset.addEventListener('click', () => this.clearAll());
+    this.elements.btnReset.addEventListener('click', () => this.clearAll(true));
 
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
@@ -206,7 +218,7 @@ revision = ${site.revision}
       element.style.display = 'none';
     }
   }
-  public clearAll(): void {
+  public clearAll(compute: boolean = false): void {
     this.elements.master.value = '';
     this.elements.site.value = '';
     this.elements.special.value = 'all';
@@ -218,7 +230,9 @@ revision = ${site.revision}
     this.elements.master.placeholder = getPoemLine();
     this.elements.tipClip.style.display = 'none';
     this.elements.tipClipBtn.style.display = 'none';
-    this.computeHash();
+    if (compute) {
+      this.computeHash();
+    }
   }
   public clear(elementId: string): void {
     const element = document.getElementById(elementId) as HTMLInputElement;

@@ -58,6 +58,7 @@ class PazUI {
       btnExtrasArrow: document.getElementById("btn-extras-arrow"),
       uiExtrasContainer: document.getElementById("ui-extras-container"),
       btnView: document.getElementById("btn-view"),
+      btnBookmark: document.getElementById("btn-bookmark"),
       btnReset: document.getElementById("btn-reset"),
       tipClip: document.getElementById("tip-clip"),
       tipClipBtn: document.getElementById("tip-clip-btm")
@@ -91,14 +92,22 @@ class PazUI {
       this.elements.hash.select();
       document.execCommand("copy");
       this.elements.tipClipBtn.innerHTML = `
-        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>
-        <br><br> 
-        Use the <i class="fa-solid fa-book"></i> button to make a backup of your site settings.
-        <br>
-        Use the <i class="fa-solid fa-paste"></i> button to load these settings later.`;
+        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>`;
       this.elements.tipClipBtn.style.display = "block";
     });
-    this.elements.btnReset.addEventListener("click", () => this.clearAll());
+    this.elements.btnBookmark.addEventListener("click", () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("site", this.elements.site.value);
+      url.searchParams.set("special", this.elements.special.value);
+      url.searchParams.set("length", this.elements.length.value);
+      url.searchParams.set("revision", this.elements.revision.value);
+      navigator.clipboard.writeText(url.toString());
+      this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
+      <br><br>
+      Use ctrl/cmd + D to bookmark it in your browser!`;
+      this.elements.tipClip.style.display = "block";
+    });
+    this.elements.btnReset.addEventListener("click", () => this.clearAll(true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
   }
   siteINIFromSite(site) {
@@ -203,7 +212,7 @@ revision = ${site.revision}
       element.style.display = "none";
     }
   }
-  clearAll() {
+  clearAll(compute = false) {
     this.elements.master.value = "";
     this.elements.site.value = "";
     this.elements.special.value = "all";
@@ -215,7 +224,9 @@ revision = ${site.revision}
     this.elements.master.placeholder = getPoemLine();
     this.elements.tipClip.style.display = "none";
     this.elements.tipClipBtn.style.display = "none";
-    this.computeHash();
+    if (compute) {
+      this.computeHash();
+    }
   }
   clear(elementId) {
     const element = document.getElementById(elementId);
