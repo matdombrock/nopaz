@@ -14,11 +14,10 @@ type PazUIElements = {
   btnExtras: HTMLButtonElement;
   btnExtrasArrow: HTMLSpanElement;
   uiExtrasContainer: HTMLDivElement;
-  btnImport: HTMLButtonElement;
-  btnExport: HTMLButtonElement;
   btnView: HTMLButtonElement;
+  btnReset: HTMLButtonElement;
   tipClip: HTMLDivElement;
-  tipClipBtm: HTMLDivElement;
+  tipClipBtn: HTMLDivElement;
 }
 
 
@@ -36,11 +35,10 @@ class PazUI {
       btnExtras: document.getElementById('btn-extras') as HTMLButtonElement,
       btnExtrasArrow: document.getElementById('btn-extras-arrow') as HTMLSpanElement,
       uiExtrasContainer: document.getElementById('ui-extras-container') as HTMLDivElement,
-      btnImport: document.getElementById('btn-import') as HTMLButtonElement,
-      btnExport: document.getElementById('btn-export') as HTMLButtonElement,
       btnView: document.getElementById('btn-view') as HTMLButtonElement,
+      btnReset: document.getElementById('btn-reset') as HTMLButtonElement,
       tipClip: document.getElementById('tip-clip') as HTMLDivElement,
-      tipClipBtm: document.getElementById('tip-clip-btm') as HTMLDivElement,
+      tipClipBtn: document.getElementById('tip-clip-btm') as HTMLDivElement,
     };
     this.elements.master.addEventListener('input', () => this.computeHash());
     this.elements.site.addEventListener('input', () => this.computeHash());
@@ -50,14 +48,14 @@ class PazUI {
     this.elements.replication.addEventListener('input', () => this.import());
 
     // Set default values
-    this.elements.master.value = '';
-    this.elements.master.placeholder = getPoemLine();
-    this.elements.site.value = '';
-    this.elements.length.value = '16';
-    this.elements.revision.value = '1';
-    this.elements.special.value = 'all';
-    this.elements.hash.value = '';
-    this.elements.replication.value = '';
+    this.clearAll();
+
+    // Check query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    this.elements.site.value = urlParams.get('site') || this.elements.site.value;
+    this.elements.special.value = urlParams.get('special') || this.elements.special.value;
+    this.elements.length.value = urlParams.get('length') || this.elements.length.value;
+    this.elements.revision.value = urlParams.get('revision') || this.elements.revision.value;
 
     this.elements.master.focus();
 
@@ -72,32 +70,6 @@ class PazUI {
       }
     });
 
-    // Import
-    this.elements.btnImport.addEventListener('click', () => {
-      this.elements.replication.value = '';
-      this.elements.replication.placeholder = '[your.site]\nspecial =\nlength =\nrevision =\n';
-      this.elements.replication.style.display = 'block';
-    });
-
-    // Export
-    this.elements.btnExport.addEventListener('click', () => {
-      // Copy site data to clipboard
-      if (!this.elements.replication.value || this.elements.replication.value === '') {
-
-        this.elements.tipClip.innerHTML = `
-        <strong><i class="fa-solid fa-circle-xmark"></i> Nothing to copy yet!</strong>`;
-        this.elements.tipClip.style.display = 'block';
-        return
-      };
-      this.elements.replication.style.display = 'block';
-      this.elements.replication.select();
-      document.execCommand('copy');
-      this.elements.replication.style.display = 'none';
-      this.elements.tipClip.innerHTML = `
-        <strong><i class="fa-solid fa-circle-check"></i> Site settings copied to clipboard!</strong>`;
-      this.elements.tipClip.style.display = 'block';
-    });
-
     // Copy hash to clipboard
     this.elements.hash.addEventListener('click', () => {
       if (!this.elements.hash.value || this.elements.hash.value === '') {
@@ -105,24 +77,20 @@ class PazUI {
       };
       this.elements.hash.select();
       document.execCommand('copy');
-      this.elements.tipClipBtm.innerHTML = `
+      this.elements.tipClipBtn.innerHTML = `
         <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>
         <br><br> 
         Use the <i class="fa-solid fa-book"></i> button to make a backup of your site settings.
         <br>
         Use the <i class="fa-solid fa-paste"></i> button to load these settings later.`;
-      this.elements.tipClipBtm.style.display = 'block';
+      this.elements.tipClipBtn.style.display = 'block';
     });
+
+    // Clear inputs
+    this.elements.btnReset.addEventListener('click', () => this.clearAll());
 
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
-
-    // DBG
-    // If there is a url query parameter "debug" set to "1",
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('debug') === '1') {
-    }
-
   }
   private siteINIFromSite(site: PazSite): string {
     return `[${site.siteId}]
@@ -211,10 +179,20 @@ revision = ${site.revision}
     this.elements.replication.value = this.siteINIFromSite(site);
 
     this.elements.tipClip.style.display = 'none';
+
+    // Set the URL query parameters
+    const url = new URL(window.location.href);
+    url.searchParams.set('site', site.siteId);
+    url.searchParams.set('special', site.special);
+    url.searchParams.set('length', site.length.toString());
+    url.searchParams.set('revision', site.revision.toString());
+    window.history.replaceState({}, '', url.toString());
   }
   public toggleView(): void {
     this.elements.master.type = this.elements.master.type === 'password' ? 'text' : 'password';
+
     this.elements.hash.type = this.elements.hash.type === 'password' ? 'text' : 'password';
+
     this.elements.btnView.innerHTML = (this.elements.master.type === 'password') ?
       '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
   }
@@ -227,6 +205,20 @@ revision = ${site.revision}
     else {
       element.style.display = 'none';
     }
+  }
+  public clearAll(): void {
+    this.elements.master.value = '';
+    this.elements.site.value = '';
+    this.elements.special.value = 'all';
+    this.elements.length.value = '16';
+    this.elements.revision.value = '1';
+    this.elements.master.placeholder = getPoemLine();
+    this.elements.hash.value = '';
+    this.elements.replication.value = '';
+    this.elements.master.placeholder = getPoemLine();
+    this.elements.tipClip.style.display = 'none';
+    this.elements.tipClipBtn.style.display = 'none';
+    this.computeHash();
   }
   public clear(elementId: string): void {
     const element = document.getElementById(elementId) as HTMLInputElement;

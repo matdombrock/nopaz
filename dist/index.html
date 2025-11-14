@@ -11,16 +11,16 @@
 
 <body>
   <div id="app">
-    <h1><i class="fa-solid fa-eye-slash"></i> NOPAZ</h1>
+    <h1><i class="fa-solid fa-eye"></i> NOPAZ</h1>
     <div class="tip" style="display: block;">
       <strong><i class="fa-solid fa-unlock"></i> No account, no vault, no worries.</strong>
       <br />
       <i>An account-less, vault-less, cloud-less password manager for humans.</i>
     </div>
     <div style="display: flex; width: 100%; margin-top: 10px;">
-      <button id="btn-import" title="load backup"><i class="fa-solid fa-paste"></i></button>
-      <button id="btn-export" title="save backup"><i class="fa-solid fa-book"></i></button>
       <button id="btn-view" title="show / hide sensitive info"><i class="fa-solid fa-eye"></i></button>
+      <button id="btn-export" title="save backup"><i class="fa-solid fa-bookmark"></i></button>
+      <button id="btn-reset" title="reset"><i class="fa-solid fa-shower"></i></button>
     </div>
     <div id="tip-clip" class="tip tip-strong">
       CLIPBOARD
@@ -341,20 +341,20 @@
     display: none;
   }
 
+  #btn-reset,
   #btn-view,
-  #btn-import,
   #btn-export {
     width: 33.333%;
   }
 
-  #btn-import {
+  #btn-view {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     background-color: var(--btn1);
   }
 
-  #btn-import:hover {
+  #btn-view:hover {
     background-color: var(--btn-hover);
   }
 
@@ -367,19 +367,19 @@
     background-color: var(--btn-hover);
   }
 
-  #btn-view {
+  #btn-reset {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     background-color: var(--btn3);
   }
 
-  #btn-view:hover {
+  #btn-reset:hover {
     background-color: var(--btn-hover);
   }
 
 
-  #btn-import {
+  #btn-view {
     float: left;
   }
 
