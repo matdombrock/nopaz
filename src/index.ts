@@ -99,7 +99,7 @@ class PazUI {
     };
     const master = this.elements.master.value;
     let hash = '';
-    if (master || master !== '') {
+    if (master && master !== '' && site.siteId && site.siteId !== '') {
       hash = await Paz.hash(master, site);
     }
     else {
@@ -125,6 +125,7 @@ class PazUI {
     if (element) {
       element.value = '';
     }
+    this.computeHash();
   }
 }
 
