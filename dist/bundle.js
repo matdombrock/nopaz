@@ -69,7 +69,7 @@ class PazUI {
     this.elements.length.addEventListener("input", () => this.computeHash());
     this.elements.revision.addEventListener("input", () => this.computeHash());
     this.elements.replication.addEventListener("input", () => this.import());
-    this.clearAll();
+    this.clearAll(false, false);
     const urlParams = new URLSearchParams(window.location.search);
     this.elements.site.value = urlParams.get("site") || this.elements.site.value;
     this.elements.special.value = urlParams.get("special") || this.elements.special.value;
@@ -107,7 +107,7 @@ class PazUI {
       Use ctrl/cmd + D to bookmark it in your browser!`;
       this.elements.tipClip.style.display = "block";
     });
-    this.elements.btnReset.addEventListener("click", () => this.clearAll(true));
+    this.elements.btnReset.addEventListener("click", () => this.clearAll(true, true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
   }
   siteINIFromSite(site) {
@@ -212,7 +212,7 @@ revision = ${site.revision}
       element.style.display = "none";
     }
   }
-  clearAll(compute = false) {
+  clearAll(compute, query) {
     this.elements.master.value = "";
     this.elements.site.value = "";
     this.elements.special.value = "all";
@@ -226,6 +226,14 @@ revision = ${site.revision}
     this.elements.tipClipBtn.style.display = "none";
     if (compute) {
       this.computeHash();
+    }
+    if (query) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("site");
+      url.searchParams.delete("special");
+      url.searchParams.delete("length");
+      url.searchParams.delete("revision");
+      window.history.replaceState({}, "", url.toString());
     }
   }
   clear(elementId) {

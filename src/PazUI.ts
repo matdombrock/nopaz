@@ -50,7 +50,7 @@ class PazUI {
     this.elements.replication.addEventListener('input', () => this.import());
 
     // Set default values
-    this.clearAll();
+    this.clearAll(false, false);
 
     // Check query parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -99,7 +99,7 @@ class PazUI {
     });
 
     // Clear inputs
-    this.elements.btnReset.addEventListener('click', () => this.clearAll(true));
+    this.elements.btnReset.addEventListener('click', () => this.clearAll(true, true));
 
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
@@ -218,7 +218,7 @@ revision = ${site.revision}
       element.style.display = 'none';
     }
   }
-  public clearAll(compute: boolean = false): void {
+  public clearAll(compute: boolean, query: boolean): void {
     this.elements.master.value = '';
     this.elements.site.value = '';
     this.elements.special.value = 'all';
@@ -230,8 +230,18 @@ revision = ${site.revision}
     this.elements.master.placeholder = getPoemLine();
     this.elements.tipClip.style.display = 'none';
     this.elements.tipClipBtn.style.display = 'none';
+    // Recompute hash if needed
     if (compute) {
       this.computeHash();
+    }
+    // Clear query parameters
+    if (query) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('site');
+      url.searchParams.delete('special');
+      url.searchParams.delete('length');
+      url.searchParams.delete('revision');
+      window.history.replaceState({}, '', url.toString());
     }
   }
   public clear(elementId: string): void {
