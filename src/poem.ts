@@ -1,13 +1,3 @@
-// const poem = [
-//   "When I heard the learned astronomer",
-//   "When I was shown the charts and diagrams",
-//   "When I sitting heard the astronomer",
-//   "Till rising and gliding out I wandered",
-//   "In the mystical moist night-air",
-//   "Looked up in perfect silence at the stars"
-// ];
-//
-
 const poem = [
   "Out of the Rolling Ocean the Crowd",
   "When I Heard the Learn’d Astronomer",

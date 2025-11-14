@@ -1,15 +1,12 @@
-# nopass
+# nopaz
+- No vault
+- No account
+- No cloud
+- No backend
+- No database
+- No frameworks
+- No dependencies
+- No leaks
+- *No worries*
 
-To install dependencies:
 
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.2. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

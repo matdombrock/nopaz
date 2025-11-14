@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "bun build --outfile=dist/bundle.js src/index.ts",
+    "build": "bun build --outfile=dist/bundle.js src/PazUI.ts",
     "serve": "bunx serve dist"
   },
   "devDependencies": {

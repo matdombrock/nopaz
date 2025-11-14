@@ -1,9 +1,9 @@
 import type { Site } from './types';
 
 import { Paz } from './Paz';
-import getPoemLine from './astro';
+import getPoemLine from './poem';
 
-type PazElements = {
+type PazUIElements = {
   master: HTMLInputElement;
   site: HTMLInputElement;
   special: HTMLInputElement;
@@ -20,7 +20,7 @@ type PazElements = {
 
 
 class PazUI {
-  private elements: PazElements;
+  private elements: PazUIElements;
   constructor() {
     this.elements = {
       master: document.getElementById('in-master') as HTMLInputElement,
