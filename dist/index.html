@@ -11,7 +11,7 @@
 
 <body>
   <div id="app">
-    <h1><i class="fa-solid fa-eye"></i> NOPAZ</h1>
+    <h1><i class="fa-solid fa-fire"></i> NOPAZ</h1>
     <div class="tip" style="display: block;">
       <strong><i class="fa-solid fa-unlock"></i> No account, no vault, no worries.</strong>
       <br />
@@ -133,6 +133,7 @@
     --warn: #ff8888;
     --red: #ff9999;
     --round: 0.5rem;
+    --width: 720px;
   }
 
   .warn {
@@ -142,6 +143,7 @@
   * {
     font-family: Arial, sans-serif;
     font-family: 'Agave', sans-serif;
+    font-size: 1.15em;
   }
 
   html {
@@ -151,9 +153,7 @@
     min-height: 100%;
   }
 
-  body {
-    margin: 20px;
-  }
+  body {}
 
   h1 {
     font-size: 2em;
@@ -161,7 +161,7 @@
   }
 
   #app {
-    max-width: 400px;
+    max-width: var(--width);
     margin: auto;
   }
 
@@ -215,7 +215,7 @@
   textarea {
     font-size: 0.8em;
     margin-top: 10px;
-    width: 400px;
+    width: 100%;
     box-sizing: border-box;
     padding: 1rem;
     background-color: var(--input-bg);
