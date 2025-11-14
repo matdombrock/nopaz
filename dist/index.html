@@ -22,6 +22,10 @@
       <button id="btn-export" title="save backup"><i class="fa-solid fa-book"></i></button>
       <button id="btn-view" title="show / hide sensitive info"><i class="fa-solid fa-eye"></i></button>
     </div>
+    <div id="tip-clip" class="tip tip-strong">
+      CLIPBOARD
+    </div>
+    <textarea id="io-replication" rows="4" cols="50"></textarea>
     <label for="in-master"><i class="fa-solid fa-key"></i> Your Passphrase</label>
     <span class="tool-area">
       <div onclick="pazui.clear('in-master')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
@@ -89,7 +93,7 @@
     </div>
     <hr \>
     <label for="out-hash" style="margin-top: 0;"><i class="fa-solid fa-unlock"></i> Your Password</label>
-    <span class="tool-area">
+    <span class="tool-area" style="margin-top: 0;">
       <div onclick="pazui.showTip('tip-hash')" class="btn-tool btn-tool-tip" title="help"><i
           class="fa-solid fa-question"></i></div>
     </span>
@@ -98,12 +102,9 @@
       passphrase and site identifier to regenerate it in the future.
     </div>
     <input id="out-hash" type="text" placeholder="Waiting For Passphrase..." readonly />
-    <br />
-    <div id="tip-clip" class="tip tip-strong">
+    <div id="tip-clip-btm" class="tip tip-strong">
       CLIPBOARD
     </div>
-    <textarea id="io-replication" rows="7" cols="50">
-    </textarea>
   </div>
 </body>
 
@@ -212,6 +213,7 @@
   }
 
   textarea {
+    font-size: 0.8em;
     margin-top: 10px;
     width: 400px;
     box-sizing: border-box;
@@ -220,6 +222,7 @@
     color: var(--input-color);
     border: none;
     border-radius: var(--round);
+    color: var(--tip);
   }
 
   label .fa-solid {

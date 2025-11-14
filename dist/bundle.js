@@ -60,7 +60,8 @@ class PazUI {
       btnImport: document.getElementById("btn-import"),
       btnExport: document.getElementById("btn-export"),
       btnView: document.getElementById("btn-view"),
-      tipClip: document.getElementById("tip-clip")
+      tipClip: document.getElementById("tip-clip"),
+      tipClipBtm: document.getElementById("tip-clip-btm")
     };
     this.elements.master.addEventListener("input", () => this.computeHash());
     this.elements.site.addEventListener("input", () => this.computeHash());
@@ -75,6 +76,7 @@ class PazUI {
     this.elements.revision.value = "1";
     this.elements.special.value = "all";
     this.elements.hash.value = "";
+    this.elements.replication.value = "";
     this.elements.master.focus();
     this.elements.btnExtras.addEventListener("click", () => {
       if (this.elements.uiExtrasContainer.style.display === "none" || this.elements.uiExtrasContainer.style.display === "") {
@@ -85,12 +87,29 @@ class PazUI {
         this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
       }
     });
+    this.elements.btnImport.addEventListener("click", () => {
+      this.elements.replication.value = "";
+      this.elements.replication.placeholder = `[your.site]
+special =
+length =
+revision =
+`;
+      this.elements.replication.style.display = "block";
+    });
     this.elements.btnExport.addEventListener("click", () => {
-      if (this.elements.replication.style.display === "none" || this.elements.replication.style.display === "") {
-        this.elements.replication.style.display = "block";
-      } else {
-        this.elements.replication.style.display = "none";
+      if (!this.elements.replication.value || this.elements.replication.value === "") {
+        this.elements.tipClip.innerHTML = `
+        <strong><i class="fa-solid fa-circle-xmark"></i> Nothing to copy yet!</strong>`;
+        this.elements.tipClip.style.display = "block";
+        return;
       }
+      this.elements.replication.style.display = "block";
+      this.elements.replication.select();
+      document.execCommand("copy");
+      this.elements.replication.style.display = "none";
+      this.elements.tipClip.innerHTML = `
+        <strong><i class="fa-solid fa-circle-check"></i> Site settings copied to clipboard!</strong>`;
+      this.elements.tipClip.style.display = "block";
     });
     this.elements.hash.addEventListener("click", () => {
       if (!this.elements.hash.value || this.elements.hash.value === "") {
@@ -98,26 +117,71 @@ class PazUI {
       }
       this.elements.hash.select();
       document.execCommand("copy");
-      this.elements.tipClip.innerHTML = `
+      this.elements.tipClipBtm.innerHTML = `
         <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>
         <br><br> 
         Use the <i class="fa-solid fa-book"></i> button to make a backup of your site settings.
         <br>
         Use the <i class="fa-solid fa-paste"></i> button to load these settings later.`;
-      this.elements.tipClip.style.display = "block";
+      this.elements.tipClipBtm.style.display = "block";
     });
     this.elements.btnView.addEventListener("click", () => this.toggleView());
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("debug") === "1") {}
+  }
+  siteINIFromSite(site) {
+    return `[${site.siteId}]
+special = ${site.special}
+length = ${site.length}
+revision = ${site.revision}
+`;
+  }
+  siteFromINI(ini) {
+    const lines = ini.split(`
+`);
+    const site = {};
+    for (const line of lines) {
+      const [key, value] = line.split("=");
+      if (key && value) {
+        switch (key.trim()) {
+          case "special":
+            site.special = value.trim();
+            break;
+          case "length":
+            site.length = parseInt(value.trim(), 10);
+            break;
+          case "revision":
+            site.revision = parseInt(value.trim(), 10);
+            break;
+        }
+      }
+      if (line.trim().startsWith("[") && line.trim().endsWith("]")) {
+        site.siteId = line.trim().slice(1, -1);
+      }
+    }
+    if (!site.siteId || !site.special || !site.special || !site.revision) {
+      return null;
+    }
+    return site;
   }
   import() {
     const replicationValue = this.elements.replication.value;
-    const replicationJSON = JSON.parse(replicationValue);
-    this.elements.site.value = replicationJSON.domain;
+    const replicationJSON = this.siteFromINI(replicationValue);
+    if (!replicationJSON) {
+      this.elements.tipClip.innerText = "Error: Invalid replication data.";
+      this.elements.tipClip.style.display = "block";
+      return;
+    }
+    this.elements.site.value = replicationJSON.siteId;
     this.elements.special.value = replicationJSON.special;
     this.elements.length.value = replicationJSON.length.toString();
     this.elements.revision.value = replicationJSON.revision.toString();
-    this.elements.tipClip.innerText = "Imported replication data.";
+    this.elements.tipClip.innerHTML = '<i class="fa-solid fa-circle-check"></i> Imported replication data.';
     this.elements.tipClip.style.display = "block";
     this.computeHash();
+    this.elements.replication.style.display = "none";
+    this.elements.tipClip.innerText = "Imported replication data.";
+    this.elements.tipClip.style.display = "block";
   }
   async computeHash() {
     console.log("Computing hash...");
@@ -143,7 +207,7 @@ class PazUI {
     console.log("Site data:", site);
     console.log("Computed hash:", hash);
     this.elements.hash.value = hash;
-    this.elements.replication.value = JSON.stringify(site, null, 2);
+    this.elements.replication.value = this.siteINIFromSite(site);
     this.elements.tipClip.style.display = "none";
   }
   toggleView() {
