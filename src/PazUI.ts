@@ -15,6 +15,7 @@ type PazUIElements = {
   uiExtrasContainer: HTMLDivElement;
   btnImport: HTMLButtonElement;
   btnExport: HTMLButtonElement;
+  btnView: HTMLButtonElement;
   tipClip: HTMLDivElement;
 }
 
@@ -34,6 +35,7 @@ class PazUI {
       uiExtrasContainer: document.getElementById('ui-extras-container') as HTMLDivElement,
       btnImport: document.getElementById('btn-import') as HTMLButtonElement,
       btnExport: document.getElementById('btn-export') as HTMLButtonElement,
+      btnView: document.getElementById('btn-view') as HTMLButtonElement,
       tipClip: document.getElementById('tip-clip') as HTMLDivElement,
     };
     this.elements.master.addEventListener('input', () => this.computeHash());
@@ -51,6 +53,8 @@ class PazUI {
     this.elements.revision.value = '1';
     this.elements.special.value = 'all';
     this.elements.hash.value = '';
+
+    this.elements.master.focus();
 
     this.elements.btnExtras.addEventListener('click', () => {
       if (this.elements.uiExtrasContainer.style.display === 'none' || this.elements.uiExtrasContainer.style.display === '') {
@@ -74,9 +78,16 @@ class PazUI {
       };
       this.elements.hash.select();
       document.execCommand('copy');
-      this.elements.tipClip.innerText = 'Password copied to clipboard!';
+      this.elements.tipClip.innerHTML = `
+        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>
+        <br><br> 
+        Use the <i class="fa-solid fa-book"></i> button to make a backup of your site settings.
+        <br>
+        Use the <i class="fa-solid fa-paste"></i> button to load these settings later.`;
       this.elements.tipClip.style.display = 'block';
     });
+
+    this.elements.btnView.addEventListener('click', () => this.toggleView());
   }
   public import(): void {
     const replicationValue = this.elements.replication.value;
@@ -99,8 +110,16 @@ class PazUI {
     };
     const master = this.elements.master.value;
     let hash = '';
-    if (master && master !== '' && site.siteId && site.siteId !== '') {
+    if (master !== '' && site.siteId !== '') {
       hash = await Paz.hash(master, site);
+    }
+    else if (master === '') {
+      hash = '';
+      this.elements.hash.placeholder = 'Waiting For Passphrase...';
+    }
+    else if (site.siteId === '') {
+      hash = '';
+      this.elements.hash.placeholder = 'Waiting For Site Name...';
     }
     else {
       hash = '';
@@ -109,8 +128,16 @@ class PazUI {
     console.log('Computed hash:', hash);
     this.elements.hash.value = hash;
     this.elements.replication.value = JSON.stringify(site, null, 2);
+
+    this.elements.tipClip.style.display = 'none';
   }
-  public show(elementId: string): void {
+  public toggleView(): void {
+    this.elements.master.type = this.elements.master.type === 'password' ? 'text' : 'password';
+    this.elements.hash.type = this.elements.hash.type === 'password' ? 'text' : 'password';
+    this.elements.btnView.innerHTML = (this.elements.master.type === 'password') ?
+      '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+  }
+  public showTip(elementId: string): void {
     const element = document.getElementById(elementId);
     if (!element) return;
     if (element.style.display === 'none' || element.style.display === '') {

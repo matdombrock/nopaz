@@ -11,7 +11,7 @@
 
 <body>
   <div id="app">
-    <h1><i class="fa-solid fa-eye"></i> NOPAZ</h1>
+    <h1><i class="fa-solid fa-eye-slash"></i> NOPAZ</h1>
     <div class="tip" style="display: block;">
       <strong><i class="fa-solid fa-unlock"></i> No account, no vault, no worries.</strong>
       <br />
@@ -26,7 +26,7 @@
     <span class="tool-area">
       <div onclick="pazui.clear('in-master')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
       </div>
-      <div onclick="pazui.show('tip-master')" class="btn-tool btn-tool-tip" title="help"><i
+      <div onclick="pazui.showTip('tip-master')" class="btn-tool btn-tool-tip" title="help"><i
           class="fa-solid fa-question"></i></div>
     </span>
     <div id="tip-master" class="tip">
@@ -37,7 +37,7 @@
     <span class="tool-area">
       <div onclick="pazui.clear('in-site')" class="btn-tool" title="clear input"><i class="fa-solid fa-undo"></i>
       </div>
-      <div onclick="pazui.show('tip-site')" class="btn-tool btn-tool-tip" title="help"><i
+      <div onclick="pazui.showTip('tip-site')" class="btn-tool btn-tool-tip" title="help"><i
           class="fa-solid fa-question"></i></div>
     </span>
     <div id="tip-site" class="tip">
@@ -49,7 +49,7 @@
     <div id="ui-extras-container">
       <label for="in-length"><i class="fa-solid fa-hashtag"></i> Password Length</label>
       <span class="tool-area">
-        <div onclick="pazui.show('tip-length')" class="btn-tool btn-tool-tip" title="help"><i
+        <div onclick="pazui.showTip('tip-length')" class="btn-tool btn-tool-tip" title="help"><i
             class="fa-solid fa-question"></i></div>
       </span>
       <div id="tip-length" class="tip">
@@ -59,7 +59,7 @@
       <input id="in-length" type="number" placeholder="Length" min="1" max="64" />
       <label for="in-special"><i class="fa-solid fa-clipboard-question"></i> Special</label>
       <span class="tool-area">
-        <div onclick="pazui.show('tip-special')" class="btn-tool btn-tool-tip" title="help"><i
+        <div onclick="pazui.showTip('tip-special')" class="btn-tool btn-tool-tip" title="help"><i
             class="fa-solid fa-question"></i>
         </div>
       </span>
@@ -75,7 +75,7 @@
       </select>
       <label for="in-revision"><i class="fa-solid fa-asterisk"></i> Revision</label>
       <span class="tool-area">
-        <div onclick="pazui.show('tip-revision')" class="btn-tool btn-tool-tip" title="help"><i
+        <div onclick="pazui.showTip('tip-revision')" class="btn-tool btn-tool-tip" title="help"><i
             class="fa-solid fa-question"></i>
         </div>
       </span>
@@ -88,14 +88,14 @@
     <hr \>
     <label for="out-hash" style="margin-top: 0;"><i class="fa-solid fa-unlock"></i> Your Password</label>
     <span class="tool-area">
-      <div onclick="pazui.show('tip-hash')" class="btn-tool btn-tool-tip" title="help"><i
+      <div onclick="pazui.showTip('tip-hash')" class="btn-tool btn-tool-tip" title="help"><i
           class="fa-solid fa-question"></i></div>
     </span>
     <div id="tip-hash" class="tip">
       This password is generated locally in your browser and is not sent to any server. Make sure to remember your
       passphrase and site identifier to regenerate it in the future.
     </div>
-    <input id="out-hash" type="text" placeholder="Waiting to generate" readonly />
+    <input id="out-hash" type="text" placeholder="Waiting For Passphrase..." readonly />
     <br />
     <div id="tip-clip" class="tip tip-strong">
       CLIPBOARD
