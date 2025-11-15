@@ -1,4 +1,4 @@
-# NOPAZ
+# 🔥 NOPAZ
 
 > No account, no vault, no worries.
 > 
@@ -6,7 +6,7 @@
 
 ![screenshot](_doc/screenshot.png)
 
-## Does not feature
+## ❌ Does not feature
 - A password vault
 - Account management
 - Cloud services
@@ -19,6 +19,6 @@
 
 NOPAZ deterministically generates "random" passwords based off of your master passphrase and a site id. 
 
-## Inspired by
+## 💡 Inspired by
 - [Eblade/paz](https://github.com/eblade/paz)
 - [Chriszarate/supergenpass](https://github.com/chriszarate/supergenpass)
