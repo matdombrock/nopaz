@@ -1,14 +1,23 @@
-# nopaz
-- No vault
-- No account
-- No cloud
-- No backend
-- No database
-- No frameworks
-- No dependencies
-- No leaks
-- *No worries*
+# NOPAZ
 
-## Inspired by:
+> No account, no vault, no worries.
+> An account-less, vault-less, cloud-less password manager for humans. 
+
+![screenshot](_doc/screenshot.png)
+
+## Does not feature
+- A password vault
+- Account management
+- Cloud services
+- A back-end server
+- A database
+- A JavaScript framework
+- Dependencies on external software
+- Leaks
+- *Worries*
+
+NOPAZ deterministically generates "random" passwords based off of your master passphrase and a site id. 
+
+## Inspired by
 - [Eblade/paz](https://github.com/eblade/paz)
 - [Chriszarate/supergenpass](https://github.com/chriszarate/supergenpass)
