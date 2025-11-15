@@ -9,4 +9,6 @@
 - No leaks
 - *No worries*
 
-
+## Inspired by:
+- [Eblade/paz](https://github.com/eblade/paz)
+- [Chriszarate/supergenpass](https://github.com/chriszarate/supergenpass)
