@@ -1,6 +1,7 @@
 # NOPAZ
 
 > No account, no vault, no worries.
+> 
 > An account-less, vault-less, cloud-less password manager for humans. 
 
 ![screenshot](_doc/screenshot.png)
