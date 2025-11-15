@@ -6,7 +6,7 @@
 
 ![screenshot](_doc/screenshot.png)
 
-## ❌ Does not feature
+## 💀 Does not feature
 - A password vault
 - Account management
 - Cloud services
