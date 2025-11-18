@@ -16,10 +16,19 @@ function satisfiesRules(password) {
 
 class Paz {
   static async hash(master, site) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const debug = urlParams.get("debug") === "1";
+    if (debug) {
+      console.log("Paz debug mode enabled.");
+      console.log(`Master: ${master}`);
+      console.log(`Site: ${JSON.stringify(site)}`);
+    }
     let source = `${master}:${site.siteId}`;
     if (typeof site.revision === "number" && site.revision > 0) {
-      source += `[${site.revision}]`;
+      source += `${site.revision}`;
     }
+    if (debug)
+      console.log(`Initial source: ${source}`);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
     let hashSource = source;
@@ -30,7 +39,8 @@ class Paz {
       const data = encoder.encode(hashSource);
       const hashBuffer = await crypto.subtle.digest("SHA-512", data);
       const hash = customBase64Encode(hashBuffer);
-      console.log(`Iteration ${iteration}: hash=${hash}`);
+      if (debug)
+        console.log(`Iteration ${iteration}: hash=${hash}`);
       password = hash.slice(0, passwordLength);
       iteration += 1;
       if (iteration < minIterations) {
@@ -43,7 +53,8 @@ class Paz {
       }
       break;
     }
-    console.log(`Paz generated password in ${iteration} iterations.`);
+    if (debug)
+      console.log(`Paz generated password in ${iteration} iterations.`);
     return `${password}`;
   }
 }

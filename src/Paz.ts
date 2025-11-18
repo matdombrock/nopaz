@@ -49,8 +49,9 @@ export class Paz {
     // Construct source string
     let source = `${master}:${site.siteId}`;
     if (typeof site.revision === 'number' && site.revision > 0) {
-      source += `[${site.revision}]`;
+      source += `${site.revision}`;
     }
+    if (debug) console.log(`Initial source: ${source}`);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
     // const addition = site.special ?? '';
