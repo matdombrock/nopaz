@@ -217,6 +217,7 @@ textarea {
   background-color: var(--btn1);
   color: var(--text2);
   text-align: left;
+  font-size: 1.2rem;
 }
 
 .acc-arrow {

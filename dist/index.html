@@ -11,21 +11,27 @@
 
 <body>
   <div id="app">
+
     <h1><i class="fa-solid fa-fire"></i> NOPAZ</h1>
+
     <div class="tip" style="display: block;">
       <strong><i class="fa-solid fa-unlock"></i> No account, no vault, no worries.</strong>
       <br />
       <i>An account-less, vault-less, cloud-less password manager for humans.</i>
     </div>
+
     <div style="display: flex; width: 100%; margin-top: 10px;">
       <button id="btn-view" title="show / hide sensitive info"><i class="fa-solid fa-eye"></i></button>
       <button id="btn-bookmark" title="save backup"><i class="fa-solid fa-bookmark"></i></button>
       <button id="btn-reset" title="reset"><i class="fa-solid fa-skull"></i></button>
     </div>
+
     <div id="tip-clip" class="tip tip-strong">
       CLIPBOARD
     </div>
+
     <textarea id="io-replication" rows="4" cols="50"></textarea>
+
     <label for="in-master"><i class="fa-solid fa-key"></i> Your Passphrase</label>
     <span class="tool-area">
       <div onclick="pazui.clear('in-master')" class="btn-tool" title="clear input"><i class="fa-solid fa-xmark"></i>
@@ -41,6 +47,7 @@
       Example: "The quick brown fox jumps over the lazy dog"
     </div>
     <input id="in-master" type="text" placeholder="The quick brown fox jumps over the lazy dog" />
+
     <label for="in-site"><i class="fa-solid fa-id-card"></i> Site Name</label>
     <span class="tool-area">
       <div onclick="pazui.clear('in-site')" class="btn-tool" title="clear input"><i class="fa-solid fa-xmark"></i>
@@ -53,10 +60,16 @@
       different sites.
     </div>
     <input id="in-site" type="text" placeholder="example.com" />
+
+    <hr \>
+
     <button id="btn-extras" for="ui-extras-container">
       <i class="fa-solid fa-circle-info"></i> Details
-      <span class="acc-arrow" id="btn-extras-arrow"><i class="fa-solid fa-chevron-down"></i></span></button>
+      <span class="acc-arrow" id="btn-extras-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+    </button>
+
     <div id="ui-extras-container">
+
       <label for="in-length"><i class="fa-solid fa-hashtag"></i> Password Length</label>
       <span class="tool-area">
         <div onclick="pazui.showTip('tip-length')" class="btn-tool btn-tool-tip" title="help"><i
@@ -67,6 +80,7 @@
         limits on password length.
       </div>
       <input id="in-length" type="number" placeholder="Length" min="1" max="64" />
+
       <label for="in-special"><i class="fa-solid fa-clipboard-question"></i> Special</label>
       <span class="tool-area">
         <div onclick="pazui.showTip('tip-special')" class="btn-tool btn-tool-tip" title="help"><i
@@ -83,6 +97,7 @@
         <option value="num">Numbers (password123)</option>
         <option value="">None (password)</option>
       </select>
+
       <label for="in-revision"><i class="fa-solid fa-asterisk"></i> Revision</label>
       <span class="tool-area">
         <div onclick="pazui.showTip('tip-revision')" class="btn-tool btn-tool-tip" title="help"><i
@@ -152,7 +167,9 @@
       </div>
 
     </div>
+
     <hr \>
+
     <label for="out-hash" style="margin-top: 1rem;"><i class="fa-solid fa-unlock"></i> Your Password</label>
     <span class="tool-area" style="margin-top: 1rem;">
       <div onclick="pazui.showTip('tip-hash')" class="btn-tool btn-tool-tip" title="help"><i
@@ -163,13 +180,18 @@
       passphrase and site identifier to regenerate it in the future.
     </div>
     <input id="out-hash" type="text" placeholder="Waiting For Passphrase..." readonly />
+
     <div id="tip-clip-btm" class="tip tip-strong">
       CLIPBOARD
     </div>
+
   </div>
+
   <div id="footer">
     &copy; 2025 NOPAZ. GPL3, <a href="https://github.com/matdombrock/nopaz">Open Source <i
         class="fa-brands fa-github"></i></a>.
+  </div>
+
 </body>
 
 
