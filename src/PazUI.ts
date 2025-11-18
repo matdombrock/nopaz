@@ -168,6 +168,7 @@ revision = ${site.revision}
       special: this.elements.special.value,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
+      minIterations: 10,
     };
     const master = this.elements.master.value;
     let hash = '';

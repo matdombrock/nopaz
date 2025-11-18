@@ -1,18 +1,50 @@
 // src/Paz.ts
+function customBase64Encode(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let b64 = btoa(String.fromCharCode(...bytes));
+  b64 = b64.replace(/\+/g, "9").replace(/\//g, "8");
+  b64 = b64.replace(/=+$/, (match) => "A".repeat(match.length));
+  return b64;
+}
+function satisfiesRules(password) {
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const startsLower = /^[a-z]/.test(password);
+  return hasUpper && hasLower && hasNumber && startsLower;
+}
+
 class Paz {
   static async hash(master, site) {
-    const input = `${master}:${site.siteId}:${site.special}:${site.length}:${site.revision}`;
-    const encoder = new TextEncoder;
-    const data = encoder.encode(input);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-    const truncatedHash = hashHex.slice(0, site.length);
-    if (site.special) {
-      const specialLength = site.special.length;
-      return truncatedHash.slice(0, -specialLength) + site.special;
+    let source = `${master}:${site.siteId}`;
+    if (typeof site.revision === "number" && site.revision > 0) {
+      source += `[${site.revision}]`;
     }
-    return truncatedHash;
+    const minIterations = site.minIterations ?? 1;
+    const passwordLength = site.length ?? 12;
+    let hashSource = source;
+    let iteration = 0;
+    let password = "";
+    while (true) {
+      const encoder = new TextEncoder;
+      const data = encoder.encode(hashSource);
+      const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+      const hash = customBase64Encode(hashBuffer);
+      console.log(`Iteration ${iteration}: hash=${hash}`);
+      password = hash.slice(0, passwordLength);
+      iteration += 1;
+      if (iteration < minIterations) {
+        hashSource = hash;
+        continue;
+      }
+      if (!satisfiesRules(password)) {
+        hashSource = hash;
+        continue;
+      }
+      break;
+    }
+    console.log(`Paz generated password in ${iteration} iterations.`);
+    return `${password}`;
   }
 }
 
@@ -170,7 +202,8 @@ revision = ${site.revision}
       siteId: this.elements.site.value,
       special: this.elements.special.value,
       length: parseInt(this.elements.length.value, 10),
-      revision: parseInt(this.elements.revision.value, 10)
+      revision: parseInt(this.elements.revision.value, 10),
+      minIterations: 10
     };
     const master = this.elements.master.value;
     let hash = "";
