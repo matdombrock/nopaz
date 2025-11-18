@@ -130,14 +130,7 @@ class PazUI {
     this.elements.append.addEventListener("input", () => this.computeHash());
     this.elements.algorithm.addEventListener("input", () => this.computeHash());
     this.clearAll(false, false);
-    const urlParams = new URLSearchParams(window.location.search);
-    this.elements.site.value = urlParams.get("site") || this.elements.site.value;
-    this.elements.special.value = urlParams.get("special") || this.elements.special.value;
-    this.elements.length.value = urlParams.get("length") || this.elements.length.value;
-    this.elements.revision.value = urlParams.get("revision") || this.elements.revision.value;
-    this.elements.minIterations.value = urlParams.get("minIterations") || this.elements.minIterations.value;
-    this.elements.append.value = urlParams.get("append") || this.elements.append.value;
-    this.elements.algorithm.value = urlParams.get("algorithm") || this.elements.algorithm.value;
+    const urlParams = this.getUrlParams();
     const advanced = urlParams.get("adv") === "1";
     if (advanced) {
       this.elements.uiAdvancedContainer.style.display = "block";
@@ -175,6 +168,17 @@ class PazUI {
     });
     this.elements.btnReset.addEventListener("click", () => this.clearAll(true, true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
+  }
+  getUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.elements.site.value = urlParams.get("site") || this.elements.site.value;
+    this.elements.special.value = urlParams.get("special") || this.elements.special.value;
+    this.elements.length.value = urlParams.get("length") || this.elements.length.value;
+    this.elements.revision.value = urlParams.get("revision") || this.elements.revision.value;
+    this.elements.minIterations.value = urlParams.get("minIterations") || this.elements.minIterations.value;
+    this.elements.append.value = urlParams.get("append") || this.elements.append.value;
+    this.elements.algorithm.value = urlParams.get("algorithm") || this.elements.algorithm.value;
+    return urlParams;
   }
   updateQueryParams(site) {
     const url = new URL(window.location.href);
