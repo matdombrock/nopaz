@@ -108,6 +108,7 @@ class PazUI {
       revision: document.getElementById("in-revision"),
       hash: document.getElementById("out-hash"),
       replication: document.getElementById("io-replication"),
+      note: document.getElementById("in-note"),
       minIterations: document.getElementById("in-min-iterations"),
       algorithm: document.getElementById("in-algorithm"),
       append: document.getElementById("in-append"),
@@ -126,11 +127,12 @@ class PazUI {
     this.elements.special.addEventListener("input", () => this.computeHash());
     this.elements.length.addEventListener("input", () => this.computeHash());
     this.elements.revision.addEventListener("input", () => this.computeHash());
+    this.elements.note.addEventListener("input", () => this.computeHash());
     this.elements.minIterations.addEventListener("input", () => this.computeHash());
     this.elements.append.addEventListener("input", () => this.computeHash());
     this.elements.algorithm.addEventListener("input", () => this.computeHash());
     this.clearAll(false, false);
-    const urlParams = this.getUrlParams();
+    const urlParams = this.getQueryParams();
     const advanced = urlParams.get("adv") === "1";
     if (advanced) {
       this.elements.uiAdvancedContainer.style.display = "block";
@@ -169,12 +171,13 @@ class PazUI {
     this.elements.btnReset.addEventListener("click", () => this.clearAll(true, true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
   }
-  getUrlParams() {
+  getQueryParams() {
     const urlParams = new URLSearchParams(window.location.search);
     this.elements.site.value = urlParams.get("site") || this.elements.site.value;
     this.elements.special.value = urlParams.get("special") || this.elements.special.value;
     this.elements.length.value = urlParams.get("length") || this.elements.length.value;
     this.elements.revision.value = urlParams.get("revision") || this.elements.revision.value;
+    this.elements.note.value = urlParams.get("note") || this.elements.note.value;
     this.elements.minIterations.value = urlParams.get("minIterations") || this.elements.minIterations.value;
     this.elements.append.value = urlParams.get("append") || this.elements.append.value;
     this.elements.algorithm.value = urlParams.get("algorithm") || this.elements.algorithm.value;
@@ -186,6 +189,7 @@ class PazUI {
     url.searchParams.set("special", site.special);
     url.searchParams.set("length", site.length.toString());
     url.searchParams.set("revision", site.revision.toString());
+    url.searchParams.set("note", this.elements.note.value);
     url.searchParams.set("minIterations", site.minIterations.toString());
     url.searchParams.set("append", site.append);
     url.searchParams.set("algorithm", site.algorithm);
@@ -197,6 +201,7 @@ class PazUI {
     url.searchParams.delete("special");
     url.searchParams.delete("length");
     url.searchParams.delete("revision");
+    url.searchParams.delete("note");
     url.searchParams.delete("minIterations");
     url.searchParams.delete("append");
     url.searchParams.delete("algorithm");
@@ -208,6 +213,7 @@ class PazUI {
       special: this.elements.special.value,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
+      note: this.elements.note.value,
       minIterations: parseInt(this.elements.minIterations.value, 10),
       algorithm: this.elements.algorithm.value,
       append: this.elements.append.value

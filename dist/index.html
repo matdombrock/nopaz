@@ -102,6 +102,17 @@
         <label>Advanced Settings</label>
         </br>
 
+        <label for="in-notes"><i class="fa-solid fa-gears"></i> Notes</label>
+        <span class="tool-area">
+          <div onclick="pazui.showTip('tip-notes')" class="btn-tool btn-tool-tip" title="help"><i
+              class="fa-solid fa-question"></i>
+          </div>
+        </span>
+        <div id="tip-notes" class="tip">
+          Notes for your reference, not used in password generation
+        </div>
+        <textarea id="in-note" placeholder="username: itsame"></textarea>
+
         <label for="in-min-iterations"><i class="fa-solid fa-gears"></i> Min Iterations</label>
         <span class="tool-area">
           <div onclick="pazui.showTip('tip-min-iterations')" class="btn-tool btn-tool-tip" title="help"><i
