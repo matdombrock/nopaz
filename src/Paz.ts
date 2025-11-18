@@ -12,7 +12,7 @@ https://github.com/eblade/paz/tree/master?tab=readme-ov-file#the-algorithm-in-de
         Has at least one lower case letter
         Has at least one number
         Starts with a lower case letter
-    If the rules are not satisfied, jump back to (reqursion point) with hash as source.
+    If the rules are not satisfied, jump back to (recursion point) with hash as source.
     Return <password>[addition]
 */
 
