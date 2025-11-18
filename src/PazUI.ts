@@ -66,14 +66,7 @@ class PazUI {
     this.clearAll(false, false);
 
     // Check query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    this.elements.site.value = urlParams.get('site') || this.elements.site.value;
-    this.elements.special.value = urlParams.get('special') || this.elements.special.value;
-    this.elements.length.value = urlParams.get('length') || this.elements.length.value;
-    this.elements.revision.value = urlParams.get('revision') || this.elements.revision.value;
-    this.elements.minIterations.value = urlParams.get('minIterations') || this.elements.minIterations.value;
-    this.elements.append.value = urlParams.get('append') || this.elements.append.value;
-    this.elements.algorithm.value = urlParams.get('algorithm') || this.elements.algorithm.value;
+    const urlParams = this.getUrlParams();
 
     // Check for advanced mode
     const advanced = urlParams.get('adv') === '1';
@@ -124,6 +117,17 @@ class PazUI {
 
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
+  }
+  private getUrlParams(): URLSearchParams {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.elements.site.value = urlParams.get('site') || this.elements.site.value;
+    this.elements.special.value = urlParams.get('special') || this.elements.special.value;
+    this.elements.length.value = urlParams.get('length') || this.elements.length.value;
+    this.elements.revision.value = urlParams.get('revision') || this.elements.revision.value;
+    this.elements.minIterations.value = urlParams.get('minIterations') || this.elements.minIterations.value;
+    this.elements.append.value = urlParams.get('append') || this.elements.append.value;
+    this.elements.algorithm.value = urlParams.get('algorithm') || this.elements.algorithm.value;
+    return urlParams;
   }
   private updateQueryParams(site: PazSite): URL {
     const url = new URL(window.location.href);
