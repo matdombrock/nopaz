@@ -11,9 +11,15 @@ type PazUIElements = {
   revision: HTMLInputElement;
   hash: HTMLInputElement;
   replication: HTMLInputElement;
+  // Advanced
+  minIterations: HTMLInputElement;
+  algorithm: HTMLInputElement;
+  append: HTMLInputElement;
+  //
   btnExtras: HTMLButtonElement;
   btnExtrasArrow: HTMLSpanElement;
   uiExtrasContainer: HTMLDivElement;
+  uiAdvancedContainer: HTMLDivElement;
   btnView: HTMLButtonElement;
   btnBookmark: HTMLButtonElement;
   btnReset: HTMLButtonElement;
@@ -33,21 +39,28 @@ class PazUI {
       revision: document.getElementById('in-revision') as HTMLInputElement,
       hash: document.getElementById('out-hash') as HTMLInputElement,
       replication: document.getElementById('io-replication') as HTMLInputElement,
+      minIterations: document.getElementById('in-min-iterations') as HTMLInputElement,
+      algorithm: document.getElementById('in-algorithm') as HTMLInputElement,
+      append: document.getElementById('in-append') as HTMLInputElement,
       btnExtras: document.getElementById('btn-extras') as HTMLButtonElement,
       btnExtrasArrow: document.getElementById('btn-extras-arrow') as HTMLSpanElement,
       uiExtrasContainer: document.getElementById('ui-extras-container') as HTMLDivElement,
+      uiAdvancedContainer: document.getElementById('ui-advanced-container') as HTMLDivElement,
       btnView: document.getElementById('btn-view') as HTMLButtonElement,
       btnBookmark: document.getElementById('btn-bookmark') as HTMLButtonElement,
       btnReset: document.getElementById('btn-reset') as HTMLButtonElement,
       tipClip: document.getElementById('tip-clip') as HTMLDivElement,
       tipClipBtn: document.getElementById('tip-clip-btm') as HTMLDivElement,
     };
+    // Attach event listeners
     this.elements.master.addEventListener('input', () => this.computeHash());
     this.elements.site.addEventListener('input', () => this.computeHash());
     this.elements.special.addEventListener('input', () => this.computeHash());
     this.elements.length.addEventListener('input', () => this.computeHash());
     this.elements.revision.addEventListener('input', () => this.computeHash());
-    this.elements.replication.addEventListener('input', () => this.import());
+    this.elements.minIterations.addEventListener('input', () => this.computeHash());
+    this.elements.append.addEventListener('input', () => this.computeHash());
+    this.elements.algorithm.addEventListener('input', () => this.computeHash());
 
     // Set default values
     this.clearAll(false, false);
@@ -58,6 +71,17 @@ class PazUI {
     this.elements.special.value = urlParams.get('special') || this.elements.special.value;
     this.elements.length.value = urlParams.get('length') || this.elements.length.value;
     this.elements.revision.value = urlParams.get('revision') || this.elements.revision.value;
+    this.elements.minIterations.value = urlParams.get('minIterations') || this.elements.minIterations.value;
+    this.elements.append.value = urlParams.get('append') || this.elements.append.value;
+    this.elements.algorithm.value = urlParams.get('algorithm') || this.elements.algorithm.value;
+
+    // Check for advanced mode
+    const advanced = urlParams.get('adv') === '1';
+    if (advanced) {
+      this.elements.uiAdvancedContainer.style.display = 'block';
+    } else {
+      this.elements.uiAdvancedContainer.style.display = 'none';
+    }
 
     this.elements.master.focus();
 
@@ -86,11 +110,8 @@ class PazUI {
 
     // Bookmark site settings
     this.elements.btnBookmark.addEventListener('click', () => {
-      const url = new URL(window.location.href);
-      url.searchParams.set('site', this.elements.site.value);
-      url.searchParams.set('special', this.elements.special.value);
-      url.searchParams.set('length', this.elements.length.value);
-      url.searchParams.set('revision', this.elements.revision.value);
+      const site = this.captureSite();
+      const url = this.updateQueryParams(site);
       navigator.clipboard.writeText(url.toString());
       this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
       <br><br>
@@ -104,72 +125,42 @@ class PazUI {
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
   }
-  private siteINIFromSite(site: PazSite): string {
-    return `[${site.siteId}]
-special = ${site.special}
-length = ${site.length}
-revision = ${site.revision}
-`;
+  private updateQueryParams(site: PazSite): URL {
+    const url = new URL(window.location.href);
+    url.searchParams.set('site', site.siteId);
+    url.searchParams.set('special', site.special);
+    url.searchParams.set('length', site.length.toString());
+    url.searchParams.set('revision', site.revision.toString());
+    url.searchParams.set('minIterations', site.minIterations.toString());
+    url.searchParams.set('append', site.append);
+    url.searchParams.set('algorithm', site.algorithm);
+    return url;
   }
-  private siteFromINI(ini: string): PazSite | null {
-    const lines = ini.split('\n');
-    const site: Partial<PazSite> = {};
-    for (const line of lines) {
-      const [key, value] = line.split('=');
-      if (key && value) {
-        switch (key.trim()) {
-          case 'special':
-            site.special = value.trim();
-            break;
-          case 'length':
-            site.length = parseInt(value.trim(), 10);
-            break;
-          case 'revision':
-            site.revision = parseInt(value.trim(), 10);
-            break;
-        }
-      }
-      // Extract siteId from the section header
-      // e.g., [siteId]
-      if (line.trim().startsWith('[') && line.trim().endsWith(']')) {
-        site.siteId = line.trim().slice(1, -1);
-      }
-    }
-    if (!site.siteId || !site.special || !site.special || !site.revision) {
-      return null;
-    }
-    return site as PazSite;
+  private clearQueryParams(): void {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('site');
+    url.searchParams.delete('special');
+    url.searchParams.delete('length');
+    url.searchParams.delete('revision');
+    url.searchParams.delete('minIterations');
+    url.searchParams.delete('append');
+    url.searchParams.delete('algorithm');
+    window.history.replaceState({}, '', url.toString());
   }
-
-  public import(): void {
-    const replicationValue = this.elements.replication.value;
-    const replicationJSON = this.siteFromINI(replicationValue);
-    if (!replicationJSON) {
-      this.elements.tipClip.innerText = 'Error: Invalid replication data.';
-      this.elements.tipClip.style.display = 'block';
-      return;
-    }
-    this.elements.site.value = replicationJSON.siteId;
-    this.elements.special.value = replicationJSON.special;
-    this.elements.length.value = replicationJSON.length.toString();
-    this.elements.revision.value = replicationJSON.revision.toString();
-    this.elements.tipClip.innerHTML = '<i class="fa-solid fa-circle-check"></i> Imported replication data.';
-    this.elements.tipClip.style.display = 'block';
-    this.computeHash();
-
-    this.elements.replication.style.display = 'none';
-    this.elements.tipClip.innerText = 'Imported replication data.';
-    this.elements.tipClip.style.display = 'block';
-  }
-  public async computeHash(): Promise<void> {
-    console.log('Computing hash...');
-    const site: PazSite = {
+  private captureSite(): PazSite {
+    return {
       siteId: this.elements.site.value,
       special: this.elements.special.value,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
-      minIterations: 10,
+      minIterations: parseInt(this.elements.minIterations.value, 10),
+      algorithm: this.elements.algorithm.value,
+      append: this.elements.append.value,
     };
+  }
+  private async computeHash(): Promise<void> {
+    console.log('Computing hash...');
+    const site = this.captureSite();
     const master = this.elements.master.value;
     let hash = '';
     if (master !== '' && site.siteId !== '') {
@@ -189,19 +180,14 @@ revision = ${site.revision}
     console.log('Site data:', site);
     console.log('Computed hash:', hash);
     this.elements.hash.value = hash;
-    this.elements.replication.value = this.siteINIFromSite(site);
 
     this.elements.tipClip.style.display = 'none';
 
     // Set the URL query parameters
-    const url = new URL(window.location.href);
-    url.searchParams.set('site', site.siteId);
-    url.searchParams.set('special', site.special);
-    url.searchParams.set('length', site.length.toString());
-    url.searchParams.set('revision', site.revision.toString());
+    const url = this.updateQueryParams(site);
     window.history.replaceState({}, '', url.toString());
   }
-  public toggleView(): void {
+  private toggleView(): void {
     this.elements.master.type = this.elements.master.type === 'password' ? 'text' : 'password';
 
     this.elements.hash.type = this.elements.hash.type === 'password' ? 'text' : 'password';
@@ -219,7 +205,7 @@ revision = ${site.revision}
       element.style.display = 'none';
     }
   }
-  public clearAll(compute: boolean, query: boolean): void {
+  private clearAll(compute: boolean, query: boolean): void {
     this.elements.master.value = '';
     this.elements.site.value = '';
     this.elements.special.value = 'all';
@@ -228,6 +214,9 @@ revision = ${site.revision}
     this.elements.master.placeholder = getPoemLine();
     this.elements.hash.value = '';
     this.elements.replication.value = '';
+    this.elements.minIterations.value = '10';
+    this.elements.algorithm.value = 'sha512';
+    this.elements.append.value = '';
     this.elements.master.placeholder = getPoemLine();
     this.elements.tipClip.style.display = 'none';
     this.elements.tipClipBtn.style.display = 'none';
@@ -237,12 +226,7 @@ revision = ${site.revision}
     }
     // Clear query parameters
     if (query) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('site');
-      url.searchParams.delete('special');
-      url.searchParams.delete('length');
-      url.searchParams.delete('revision');
-      window.history.replaceState({}, '', url.toString());
+      this.clearQueryParams();
     }
   }
   public clear(elementId: string): void {

@@ -94,6 +94,52 @@
         while keeping the same passphrase and site identifier.
       </div>
       <input id="in-revision" type="number" placeholder="Revision" min="0" />
+
+      <div id="ui-advanced-container">
+
+        <hr \>
+
+        <label>Advanced Settings</label>
+        </br>
+
+        <label for="in-min-iterations"><i class="fa-solid fa-asterisk"></i> Min Iterations</label>
+        <span class="tool-area">
+          <div onclick="pazui.showTip('tip-min-iterations')" class="btn-tool btn-tool-tip" title="help"><i
+              class="fa-solid fa-question"></i>
+          </div>
+        </span>
+        <div id="tip-min-iterations" class="tip">
+          Minimum number of hash iterations
+        </div>
+        <input id="in-min-iterations" type="number" placeholder="10" min="0" />
+
+        <label for="in-append"><i class="fa-solid fa-asterisk"></i> Append</label>
+        <span class="tool-area">
+          <div onclick="pazui.showTip('tip-append')" class="btn-tool btn-tool-tip" title="help"><i
+              class="fa-solid fa-question"></i>
+          </div>
+        </span>
+        <div id="tip-append" class="tip">
+          Append a static string to the password to meet specific site requirements
+        </div>
+        <input id="in-append" type="text" placeholder="123!?" />
+
+        <label for="in-algorithm"><i class="fa-solid fa-asterisk"></i> Algorithm</label>
+        <span class="tool-area">
+          <div onclick="pazui.showTip('tip-algorithm')" class="btn-tool btn-tool-tip" title="help"><i
+              class="fa-solid fa-question"></i>
+          </div>
+        </span>
+        <div id="tip-algorithm" class="tip">
+          Hashing algorithm to use
+        </div>
+        <select id="in-algorithm">
+          <option value="sha512">Default (SHA-512)</option>
+          <option value="sha256">SHA-256</option>
+        </select>
+
+      </div>
+
     </div>
     <hr \>
     <label for="out-hash" style="margin-top: 1rem;"><i class="fa-solid fa-unlock"></i> Your Password</label>
@@ -360,6 +406,11 @@
   #ui-extras-container {
     display: none;
     animation: extras-in 0.5s ease;
+  }
+
+  #ui-advanced-container {
+    display: none;
+    font-size: 1rem;
   }
 
   #io-replication {

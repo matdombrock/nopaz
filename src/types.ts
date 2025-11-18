@@ -4,5 +4,7 @@ export type PazSite = {
   length: number;
   revision: number;
   minIterations: number;
+  algorithm: string;
+  append: string;
 }
 

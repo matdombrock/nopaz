@@ -31,13 +31,24 @@ class Paz {
       console.log(`Initial source: ${source}`);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
+    const addition = site.append ?? "";
     let hashSource = source;
     let iteration = 0;
     let password = "";
+    const algorithms = {
+      sha512: "SHA-512",
+      sha256: "SHA-256",
+      "SHA-512": "SHA-512",
+      "SHA-256": "SHA-256"
+    };
+    if (algorithms[site.algorithm] === undefined && debug) {
+      console.warn(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
+    }
+    const algorithm = algorithms[site.algorithm] || "SHA-512";
     while (true) {
       const encoder = new TextEncoder;
       const data = encoder.encode(hashSource);
-      const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+      const hashBuffer = await crypto.subtle.digest(algorithm, data);
       const hash = customBase64Encode(hashBuffer);
       if (debug)
         console.log(`Iteration ${iteration}: hash=${hash}`);
@@ -55,7 +66,7 @@ class Paz {
     }
     if (debug)
       console.log(`Paz generated password in ${iteration} iterations.`);
-    return `${password}`;
+    return `${password}${addition}`;
   }
 }
 
@@ -97,9 +108,13 @@ class PazUI {
       revision: document.getElementById("in-revision"),
       hash: document.getElementById("out-hash"),
       replication: document.getElementById("io-replication"),
+      minIterations: document.getElementById("in-min-iterations"),
+      algorithm: document.getElementById("in-algorithm"),
+      append: document.getElementById("in-append"),
       btnExtras: document.getElementById("btn-extras"),
       btnExtrasArrow: document.getElementById("btn-extras-arrow"),
       uiExtrasContainer: document.getElementById("ui-extras-container"),
+      uiAdvancedContainer: document.getElementById("ui-advanced-container"),
       btnView: document.getElementById("btn-view"),
       btnBookmark: document.getElementById("btn-bookmark"),
       btnReset: document.getElementById("btn-reset"),
@@ -111,13 +126,24 @@ class PazUI {
     this.elements.special.addEventListener("input", () => this.computeHash());
     this.elements.length.addEventListener("input", () => this.computeHash());
     this.elements.revision.addEventListener("input", () => this.computeHash());
-    this.elements.replication.addEventListener("input", () => this.import());
+    this.elements.minIterations.addEventListener("input", () => this.computeHash());
+    this.elements.append.addEventListener("input", () => this.computeHash());
+    this.elements.algorithm.addEventListener("input", () => this.computeHash());
     this.clearAll(false, false);
     const urlParams = new URLSearchParams(window.location.search);
     this.elements.site.value = urlParams.get("site") || this.elements.site.value;
     this.elements.special.value = urlParams.get("special") || this.elements.special.value;
     this.elements.length.value = urlParams.get("length") || this.elements.length.value;
     this.elements.revision.value = urlParams.get("revision") || this.elements.revision.value;
+    this.elements.minIterations.value = urlParams.get("minIterations") || this.elements.minIterations.value;
+    this.elements.append.value = urlParams.get("append") || this.elements.append.value;
+    this.elements.algorithm.value = urlParams.get("algorithm") || this.elements.algorithm.value;
+    const advanced = urlParams.get("adv") === "1";
+    if (advanced) {
+      this.elements.uiAdvancedContainer.style.display = "block";
+    } else {
+      this.elements.uiAdvancedContainer.style.display = "none";
+    }
     this.elements.master.focus();
     this.elements.btnExtras.addEventListener("click", () => {
       if (this.elements.uiExtrasContainer.style.display === "none" || this.elements.uiExtrasContainer.style.display === "") {
@@ -139,11 +165,8 @@ class PazUI {
       this.elements.tipClipBtn.style.display = "block";
     });
     this.elements.btnBookmark.addEventListener("click", () => {
-      const url = new URL(window.location.href);
-      url.searchParams.set("site", this.elements.site.value);
-      url.searchParams.set("special", this.elements.special.value);
-      url.searchParams.set("length", this.elements.length.value);
-      url.searchParams.set("revision", this.elements.revision.value);
+      const site = this.captureSite();
+      const url = this.updateQueryParams(site);
       navigator.clipboard.writeText(url.toString());
       this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
       <br><br>
@@ -153,69 +176,42 @@ class PazUI {
     this.elements.btnReset.addEventListener("click", () => this.clearAll(true, true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
   }
-  siteINIFromSite(site) {
-    return `[${site.siteId}]
-special = ${site.special}
-length = ${site.length}
-revision = ${site.revision}
-`;
+  updateQueryParams(site) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("site", site.siteId);
+    url.searchParams.set("special", site.special);
+    url.searchParams.set("length", site.length.toString());
+    url.searchParams.set("revision", site.revision.toString());
+    url.searchParams.set("minIterations", site.minIterations.toString());
+    url.searchParams.set("append", site.append);
+    url.searchParams.set("algorithm", site.algorithm);
+    return url;
   }
-  siteFromINI(ini) {
-    const lines = ini.split(`
-`);
-    const site = {};
-    for (const line of lines) {
-      const [key, value] = line.split("=");
-      if (key && value) {
-        switch (key.trim()) {
-          case "special":
-            site.special = value.trim();
-            break;
-          case "length":
-            site.length = parseInt(value.trim(), 10);
-            break;
-          case "revision":
-            site.revision = parseInt(value.trim(), 10);
-            break;
-        }
-      }
-      if (line.trim().startsWith("[") && line.trim().endsWith("]")) {
-        site.siteId = line.trim().slice(1, -1);
-      }
-    }
-    if (!site.siteId || !site.special || !site.special || !site.revision) {
-      return null;
-    }
-    return site;
+  clearQueryParams() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("site");
+    url.searchParams.delete("special");
+    url.searchParams.delete("length");
+    url.searchParams.delete("revision");
+    url.searchParams.delete("minIterations");
+    url.searchParams.delete("append");
+    url.searchParams.delete("algorithm");
+    window.history.replaceState({}, "", url.toString());
   }
-  import() {
-    const replicationValue = this.elements.replication.value;
-    const replicationJSON = this.siteFromINI(replicationValue);
-    if (!replicationJSON) {
-      this.elements.tipClip.innerText = "Error: Invalid replication data.";
-      this.elements.tipClip.style.display = "block";
-      return;
-    }
-    this.elements.site.value = replicationJSON.siteId;
-    this.elements.special.value = replicationJSON.special;
-    this.elements.length.value = replicationJSON.length.toString();
-    this.elements.revision.value = replicationJSON.revision.toString();
-    this.elements.tipClip.innerHTML = '<i class="fa-solid fa-circle-check"></i> Imported replication data.';
-    this.elements.tipClip.style.display = "block";
-    this.computeHash();
-    this.elements.replication.style.display = "none";
-    this.elements.tipClip.innerText = "Imported replication data.";
-    this.elements.tipClip.style.display = "block";
-  }
-  async computeHash() {
-    console.log("Computing hash...");
-    const site = {
+  captureSite() {
+    return {
       siteId: this.elements.site.value,
       special: this.elements.special.value,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
-      minIterations: 10
+      minIterations: parseInt(this.elements.minIterations.value, 10),
+      algorithm: this.elements.algorithm.value,
+      append: this.elements.append.value
     };
+  }
+  async computeHash() {
+    console.log("Computing hash...");
+    const site = this.captureSite();
     const master = this.elements.master.value;
     let hash = "";
     if (master !== "" && site.siteId !== "") {
@@ -232,13 +228,8 @@ revision = ${site.revision}
     console.log("Site data:", site);
     console.log("Computed hash:", hash);
     this.elements.hash.value = hash;
-    this.elements.replication.value = this.siteINIFromSite(site);
     this.elements.tipClip.style.display = "none";
-    const url = new URL(window.location.href);
-    url.searchParams.set("site", site.siteId);
-    url.searchParams.set("special", site.special);
-    url.searchParams.set("length", site.length.toString());
-    url.searchParams.set("revision", site.revision.toString());
+    const url = this.updateQueryParams(site);
     window.history.replaceState({}, "", url.toString());
   }
   toggleView() {
@@ -265,6 +256,9 @@ revision = ${site.revision}
     this.elements.master.placeholder = getPoemLine();
     this.elements.hash.value = "";
     this.elements.replication.value = "";
+    this.elements.minIterations.value = "10";
+    this.elements.algorithm.value = "sha512";
+    this.elements.append.value = "";
     this.elements.master.placeholder = getPoemLine();
     this.elements.tipClip.style.display = "none";
     this.elements.tipClipBtn.style.display = "none";
@@ -272,12 +266,7 @@ revision = ${site.revision}
       this.computeHash();
     }
     if (query) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("site");
-      url.searchParams.delete("special");
-      url.searchParams.delete("length");
-      url.searchParams.delete("revision");
-      window.history.replaceState({}, "", url.toString());
+      this.clearQueryParams();
     }
   }
   clear(elementId) {

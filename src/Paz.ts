@@ -54,17 +54,29 @@ export class Paz {
     if (debug) console.log(`Initial source: ${source}`);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
-    // const addition = site.special ?? '';
+    const addition = site.append ?? '';
     let hashSource = source;
     let iteration = 0;
     let password = '';
+
+    // Key algos in lower case for og paz compatibility
+    const algorithms: { [key: string]: string } = {
+      'sha512': 'SHA-512',
+      'sha256': 'SHA-256',
+      'SHA-512': 'SHA-512',
+      'SHA-256': 'SHA-256',
+    };
+    if (algorithms[site.algorithm] === undefined && debug) {
+      console.warn(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
+    }
+    const algorithm = algorithms[site.algorithm] || 'SHA-512';
 
     while (true) {
       // (recursion point)
       // Hash source
       const encoder = new TextEncoder();
       const data = encoder.encode(hashSource);
-      const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+      const hashBuffer = await crypto.subtle.digest(algorithm, data);
       // Custom base64 encode
       const hash = customBase64Encode(hashBuffer);
       if (debug) console.log(`Iteration ${iteration}: hash=${hash}`);
@@ -89,6 +101,6 @@ export class Paz {
     if (debug) console.log(`Paz generated password in ${iteration} iterations.`);
 
     // Return password
-    return `${password}`;
+    return `${password}${addition}`;
   }
 }
