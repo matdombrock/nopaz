@@ -19,6 +19,8 @@
 
 NOPAZ deterministically generates "random" passwords based off of your master passphrase and a site id. 
 
+Configurations are stored as bookmarks which can be kept in your browser or a note taking app.
+
 ## 💡 Inspired by
 - [Eblade/paz](https://github.com/eblade/paz)
 - [Chriszarate/supergenpass](https://github.com/chriszarate/supergenpass)
