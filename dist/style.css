@@ -1,0 +1,323 @@
+/* Import font */
+@font-face {
+  font-family: 'Agave';
+  src: url('./font/agave.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --input-bg: #333333;
+  --input-color: #ffffff;
+  --text2: #cccccc;
+  --text3: #666666;
+  --btn1: #474047;
+  --btn2: #504450;
+  --btn3: #584458;
+  --btn-hover: #665566;
+  --tip: #88ff88;
+  --tip-bg: #88998855;
+  --warn: #ff8888;
+  --red: #ff9999;
+  --round: 0.5rem;
+  --label-margin: 1.5rem;
+  --width: 720px;
+
+}
+
+.warn {
+  color: var(--warn);
+}
+
+* {
+  font-family: Arial, sans-serif;
+  font-family: 'Agave', sans-serif;
+  font-size: 1.15em;
+}
+
+/* Slightly smaller font size on mobile  */
+@media (max-width: 1200px) {
+  * {
+    font-size: 1.1em;
+  }
+}
+
+html {
+  /* background gradient */
+  background: linear-gradient(135deg, #222222, #222233);
+  color: var(--input-color);
+  min-height: 100%;
+}
+
+body {}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 0.2em;
+}
+
+#app {
+  max-width: var(--width);
+  margin: auto;
+}
+
+label {
+  display: inline-block;
+  margin-top: var(--label-margin);
+}
+
+label .fa-solid {
+  min-width: 1rem;
+  opacity: 0.6;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--btn3);
+  color: var(--input-color);
+  border: none;
+  cursor: pointer;
+  border-radius: var(--round);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--btn-hover);
+}
+
+button .fa-solid {
+  min-width: 1rem;
+  opacity: 0.6;
+}
+
+input {
+  font-size: 1em;
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  background-color: var(--input-bg);
+  color: var(--input-color);
+  border: none;
+  border-radius: var(--round);
+}
+
+/* Slightly smaller font size on mobile  */
+@media (max-width: 1200px) {
+  input {
+    font-size: 0.9em;
+  }
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  background-color: var(--input-bg);
+  color: var(--input-color);
+  border: none;
+  border-radius: var(--round);
+}
+
+option {
+  font-size: 1rem;
+}
+
+textarea {
+  font-size: 0.8em;
+  margin-top: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  background-color: var(--input-bg);
+  color: var(--input-color);
+  border: none;
+  border-radius: var(--round);
+  color: var(--tip);
+}
+
+.fa-solid {
+  vertical-align: middle;
+}
+
+.tool-area {
+  margin-top: var(--label-margin);
+  float: right;
+  font-size: 0.9em;
+  color: #888888;
+}
+
+.btn-tool {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 6px;
+  color: var(--input-color);
+  border-radius: var(--round);
+  cursor: pointer;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.btn-tool:hover {
+  color: var(--red);
+  opacity: 0.8;
+}
+
+.btn-tool-tip:hover {
+  color: var(--tip);
+  opacity: 1;
+}
+
+@keyframes tip-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.8;
+  }
+}
+
+.tip {
+  border-left: 4px solid var(--tip);
+  margin: 10px 0;
+  padding-left: 10px;
+  font-size: 0.7em;
+  opacity: 0.8;
+  line-height: 1.4em;
+  display: none;
+  animation: tip-in 0.5s ease;
+}
+
+.tip-strong {
+  font-weight: bold;
+  background-color: var(--tip-bg);
+  font-size: 0.8rem;
+  padding: 0.5rem;
+}
+
+#out-hash {
+  font-weight: bold;
+  font-size: 1.2em;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+#in-special {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+#btn-extras {
+  width: 100%;
+  padding: 6px;
+  background-color: var(--btn1);
+  color: var(--text2);
+  text-align: left;
+}
+
+.acc-arrow {
+  float: right;
+  transition: transform 0.3s ease;
+}
+
+#btn-extras:hover {
+  background-color: var(--btn-hover);
+  opacity: 1;
+}
+
+@keyframes extras-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+#ui-extras-container {
+  display: none;
+  animation: extras-in 0.5s ease;
+}
+
+#ui-advanced-container {
+  display: none;
+  font-size: 1rem;
+}
+
+#io-replication {
+  display: none;
+}
+
+#btn-reset,
+#btn-view,
+#btn-bookmark {
+  width: 33.333%;
+}
+
+#btn-view {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: var(--btn1);
+}
+
+#btn-view:hover {
+  background-color: var(--btn-hover);
+}
+
+#btn-bookmark {
+  border-radius: 0;
+  background-color: var(--btn2);
+}
+
+#btn-bookmark:hover {
+  background-color: var(--btn-hover);
+}
+
+#btn-reset {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: var(--btn3);
+}
+
+#btn-reset:hover {
+  background-color: var(--btn-hover);
+}
+
+
+#btn-view {
+  float: left;
+}
+
+#footer {
+  text-align: center;
+  margin-top: 3.14rem;
+  font-size: 0.8em;
+  color: var(--text3);
+}
+
+#footer a {
+  color: var(--input-color);
+  color: var(--text3);
+}
+
+/* Hide input controls */
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
