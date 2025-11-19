@@ -70,6 +70,98 @@ class Paz {
   }
 }
 
+// src/RNG.ts
+class RNG {
+  seed;
+  constructor(seed) {
+    this.seed = RNG.hash(seed.toString()) >>> 0;
+  }
+  static hash(input) {
+    let hash = 0;
+    for (let i = 0;i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0;
+    }
+    return hash >>> 0;
+  }
+  get() {
+    const a = 1664525;
+    const c = 1013904223;
+    const m = 2 ** 32;
+    let seed = this.seed;
+    seed = (a * seed + c) % m;
+    this.seed = (a * seed + c) % m;
+    return seed / m;
+  }
+}
+
+// src/Special.ts
+class Special {
+  static replace(password, char, position) {
+    return password.substring(0, position) + char + password.substring(position + 1);
+  }
+  static rPositions(password, count) {
+    const rng = new RNG(password);
+    const positions = new Set;
+    while (positions.size < count) {
+      const pos = Math.floor(rng.get() * password.length);
+      positions.add(pos);
+    }
+    return Array.from(positions);
+  }
+  static rUpperChar(password) {
+    const rng = new RNG(password);
+    const char = 65 + Math.floor(rng.get() * 26);
+    return String.fromCharCode(char);
+  }
+  static rNumberChar(password) {
+    const rng = new RNG(password);
+    const char = 48 + Math.floor(rng.get() * 10);
+    return String.fromCharCode(char);
+  }
+  static rSpecialChar(password) {
+    const rng = new RNG(password);
+    const char = 33 + Math.floor(rng.get() * 15);
+    return String.fromCharCode(char);
+  }
+  static mNone(password) {
+    return password;
+  }
+  static mDefault(password) {
+    const upperCharCode = Special.rUpperChar(password);
+    const numberCharCode = Special.rNumberChar(password);
+    const specialCharCode = Special.rSpecialChar(password);
+    const rpos = Special.rPositions(password, 3);
+    password = Special.replace(password, upperCharCode, rpos[0]);
+    password = Special.replace(password, numberCharCode, rpos[1]);
+    password = Special.replace(password, specialCharCode, rpos[2]);
+    return password;
+  }
+  static mNumber(password) {
+    const numberCharCode = Special.rNumberChar(password);
+    const rpos = Special.rPositions(password, 1);
+    password = Special.replace(password, numberCharCode, rpos[0]);
+    return password;
+  }
+  static mSpecial(password) {
+    const specialCharCode = Special.rSpecialChar(password);
+    const rpos = Special.rPositions(password, 1);
+    password = Special.replace(password, specialCharCode, rpos[0]);
+    return password;
+  }
+  static modes = {
+    default: Special.mDefault,
+    number: Special.mNumber,
+    special: Special.mSpecial,
+    none: Special.mNone
+  };
+  static generate(password, mode) {
+    const func = Special.modes[mode] || Special.mNone;
+    return func(password);
+  }
+}
+
 // src/poem.ts
 var poem = [
   "Out of the Rolling Ocean the Crowd",
@@ -238,6 +330,7 @@ class PazUI {
     } else {
       hash = "";
     }
+    hash = Special.generate(hash, site.special);
     console.log("Site data:", site);
     console.log("Computed hash:", hash);
     this.elements.hash.value = hash;
@@ -279,7 +372,7 @@ class PazUI {
   clearAll(compute, query) {
     this.elements.master.value = "";
     this.elements.site.value = "";
-    this.elements.special.value = "all";
+    this.elements.special.value = "default";
     this.elements.length.value = "16";
     this.elements.revision.value = "1";
     this.elements.master.placeholder = getPoemLine();
