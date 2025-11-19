@@ -7,6 +7,7 @@
 ![screenshot](_doc/screenshot.png)
 
 ## 💀 Does not feature
+
 - A password vault
 - Account management
 - Cloud services
@@ -17,9 +18,39 @@
 - Leaks
 - *Worries*
 
-NOPAZ deterministically generates "random" passwords based off of your master passphrase and a site id. 
+> [!NOTE]
+> NOPAZ deterministically generates "random" passwords based off of your master passphrase and a site id. 
+> 
+> Configurations are stored as bookmarks which can be kept in your browser or a note taking app.
 
-Configurations are stored as bookmarks which can be kept in your browser or a note taking app.
+## Bun
+This project is built with `bun` a super fast NodeJS/TSC/NPM/Bundler alternative written in Zig. 
+
+> [!TIP]
+> You **do not need Bun to use this app** you only need it for development. 
+
+[Get Bun](https://bun.com/docs/installation)
+
+## Hosting
+
+Simply point a static file server at `./dist`. There is no need to build the app.
+
+For example:
+```sh
+# With bun
+bunx serve dist
+
+# With npm
+npx serve dist
+```
+
+## Building
+
+If you want to make changes to the app and need to rebuild the typescript, do:
+
+```sh
+bun run build
+```
 
 ## Query Parameters
 
