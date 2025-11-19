@@ -55,8 +55,8 @@ The NOPAZ algorithm generates strong, unique passwords for different sites or se
 6. **Final Output:**  
    - Once a password satisfies all rules and minimum iterations, it is returned, optionally with an appended string.
 
-This algorithm provides a reproducible, secure way to generate passwords that conform to site-specific requirements, using a master password and site identifier as inputs. It is especially useful for password managers or tools that need to generate passwords on-the-fly without storing them.
-
+> [!NOTE]
+> The implementation is largely inspired by and derived from [Eblade/paz](https://github.com/eblade/paz).
 
 ## Bun
 This project is built with `bun` a super fast NodeJS/TSC/NPM/Bundler alternative written in Zig. 
