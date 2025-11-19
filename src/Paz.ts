@@ -41,22 +41,21 @@ export default class Paz {
     let pass = true;
     if (rules.hasUpper && !/[A-Z]/.test(password)) {
       pass = false;
+      dbg('! Failed uppercase check.');
     }
     if (rules.hasLower && !/[a-z]/.test(password)) {
       pass = false;
+      dbg('! Failed lowercase check.');
     }
     if (rules.hasNumber && !/[0-9]/.test(password)) {
       pass = false;
+      dbg('! Failed number check.');
     }
     if (rules.startLower && !/^[a-z]/.test(password)) {
       pass = false;
+      dbg('! Failed start lowercase check.');
     }
     return pass;
-    // const hasUpper = /[A-Z]/.test(password);
-    // const hasLower = /[a-z]/.test(password);
-    // const hasNumber = /[0-9]/.test(password);
-    // const startsLower = /^[a-z]/.test(password);
-    // return hasUpper && hasLower && hasNumber && startsLower;
   }
 
   public static async hash(master: string, site: PazSite): Promise<string> {
@@ -96,9 +95,9 @@ export default class Paz {
       const hashBuffer = await crypto.subtle.digest(algorithm, data);
       // Custom base64 encode
       const hash = Paz.customBase64Encode(hashBuffer);
-      dbg(`Iteration ${iteration}: hash = ${hash} `);
       // Cut hash to length
       password = hash.slice(0, passwordLength);
+      dbg(`Iteration ${iteration}: password = ${password} `);
       iteration += 1;
 
       // If not enough iterations, jump to recursion point with hash as source
