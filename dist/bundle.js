@@ -330,7 +330,9 @@ class PazUI {
     } else {
       hash = "";
     }
-    hash = Special.generate(hash, site.special);
+    if (hash !== "") {
+      hash = Special.generate(hash, site.special);
+    }
     console.log("Site data:", site);
     console.log("Computed hash:", hash);
     this.elements.hash.value = hash;
