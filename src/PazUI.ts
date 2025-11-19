@@ -284,6 +284,7 @@ class PazUI {
     this.elements.revision.value = '1';
     this.elements.master.placeholder = getPoemLine();
     this.elements.hash.value = '';
+    this.elements.notes.value = '';
     this.elements.minIterations.value = '10';
     this.elements.algorithm.value = 'sha512';
     this.elements.append.value = '';
