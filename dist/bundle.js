@@ -188,6 +188,17 @@ function getPoemLine() {
   return poem[lineNumber - 1] || "The quick brown fox jumps over the lazy dog.";
 }
 
+// src/emoji.ts
+function passphraseEmoji(seed) {
+  const start = 128512;
+  const end = 128591;
+  const rng = new RNG(seed);
+  const codePoint = start + Math.floor(rng.get() * (end - start + 1));
+  const emoji = String.fromCodePoint(codePoint);
+  console.log(`Random emoji code point for seed "${seed}": U+${codePoint.toString(16).toUpperCase()}`);
+  return emoji;
+}
+
 // src/PazUI.ts
 class PazUI {
   elements;
@@ -197,6 +208,7 @@ class PazUI {
   constructor() {
     this.elements = {
       master: document.getElementById("in-master"),
+      passphraseEmpji: document.getElementById("passphrase-emoji"),
       site: document.getElementById("in-site"),
       special: document.getElementById("in-special"),
       length: document.getElementById("in-length"),
@@ -313,6 +325,7 @@ class PazUI {
     this.updateSiteQueryParams(site);
     const url = new URL(window.location.href);
     window.history.replaceState({}, "", url.toString());
+    this.elements.passphraseEmpji.innerText = passphraseEmoji(master);
   }
   toggleView() {
     let hidden = this.state.hidden;

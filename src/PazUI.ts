@@ -4,10 +4,12 @@ import Paz from './Paz';
 import Special from './Special';
 import type { SpecialMode } from './types';
 import getPoemLine from './poem';
+import passphraseEmoji from './emoji';
 
 // A list of all UI elements controlled by PazUI
 type PazUIElements = {
   master: HTMLInputElement;
+  passphraseEmpji: HTMLSpanElement;
   site: HTMLInputElement;
   special: HTMLInputElement;
   length: HTMLInputElement;
@@ -42,6 +44,7 @@ class PazUI {
   constructor() {
     this.elements = {
       master: document.getElementById('in-master') as HTMLInputElement,
+      passphraseEmpji: document.getElementById('passphrase-emoji') as HTMLSpanElement,
       site: document.getElementById('in-site') as HTMLInputElement,
       special: document.getElementById('in-special') as HTMLInputElement,
       length: document.getElementById('in-length') as HTMLInputElement,
@@ -198,6 +201,9 @@ class PazUI {
     this.updateSiteQueryParams(site);
     const url = new URL(window.location.href);
     window.history.replaceState({}, '', url.toString());
+
+    // Update passphrase emoji
+    this.elements.passphraseEmpji.innerText = passphraseEmoji(master);
   }
 
   // Toggle visibility of master passphrase and hash

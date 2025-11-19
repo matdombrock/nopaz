@@ -234,6 +234,21 @@ textarea {
   font-size: 1.5rem;
 }
 
+#passphrase-emoji {
+  position: absolute;
+  top: 25%;
+  right: 0;
+  margin-right: 0.5rem;
+  opacity: 0.5;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+#passphrase-emoji:hover {
+  opacity: 1;
+  font-size: 5rem;
+  right: -2rem;
+}
+
 #app {
   max-width: var(--width);
   margin: auto;
