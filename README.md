@@ -24,7 +24,7 @@
 > Configurations are stored as bookmarks which can be kept in your browser or a note taking app.
 
 
-## Overview
+## 🏞️ Overview
 **Purpose:**
 The NOPAZ algorithm generates strong, unique passwords for different sites or services using a single master password. It ensures that each password meets customizable complexity requirements (such as character types and length) and can be reproduced exactly given the same inputs. This approach eliminates the need to remember multiple passwords and enhances security by preventing password reuse.
 
@@ -58,7 +58,7 @@ The NOPAZ algorithm generates strong, unique passwords for different sites or se
 > [!NOTE]
 > The implementation is largely inspired by and derived from [Eblade/paz](https://github.com/eblade/paz).
 
-## Bun
+## 🍞 Bun
 This project is built with `bun` a super fast NodeJS/TSC/NPM/Bundler alternative written in Zig. 
 
 > [!TIP]
@@ -66,7 +66,7 @@ This project is built with `bun` a super fast NodeJS/TSC/NPM/Bundler alternative
 
 [Get Bun](https://bun.com/docs/installation)
 
-## Hosting
+## 🏠 Hosting
 
 Simply point a static file server at `./dist`. There is no need to build the app.
 
@@ -79,7 +79,7 @@ bunx serve dist
 npx serve dist
 ```
 
-## Building
+## 🔨 Building
 
 If you want to make changes to the app and need to rebuild the typescript, do:
 
@@ -87,7 +87,7 @@ If you want to make changes to the app and need to rebuild the typescript, do:
 bun run build
 ```
 
-## Query Parameters
+## 🔎 Query Parameters
 
 ### ste - Site
 - String
