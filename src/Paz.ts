@@ -19,6 +19,13 @@ https://github.com/eblade/paz/tree/master?tab=readme-ov-file#the-algorithm-in-de
 import type { PazSite } from './types';
 import dbg from './dbg';
 
+type PazChecks = {
+  hasUpper: boolean,
+  hasLower: boolean,
+  hasNumber: boolean,
+  startLower: boolean,
+}
+
 export default class Paz {
   private static customBase64Encode(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer);
@@ -30,12 +37,26 @@ export default class Paz {
     return b64;
   }
 
-  private static satisfiesRules(password: string): boolean {
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const startsLower = /^[a-z]/.test(password);
-    return hasUpper && hasLower && hasNumber && startsLower;
+  private static satisfiesRules(password: string, rules: PazChecks): boolean {
+    let pass = true;
+    if (rules.hasUpper && !/[A-Z]/.test(password)) {
+      pass = false;
+    }
+    if (rules.hasLower && !/[a-z]/.test(password)) {
+      pass = false;
+    }
+    if (rules.hasNumber && !/[0-9]/.test(password)) {
+      pass = false;
+    }
+    if (rules.startLower && !/^[a-z]/.test(password)) {
+      pass = false;
+    }
+    return pass;
+    // const hasUpper = /[A-Z]/.test(password);
+    // const hasLower = /[a-z]/.test(password);
+    // const hasNumber = /[0-9]/.test(password);
+    // const startsLower = /^[a-z]/.test(password);
+    // return hasUpper && hasLower && hasNumber && startsLower;
   }
 
   public static async hash(master: string, site: PazSite): Promise<string> {
@@ -87,7 +108,13 @@ export default class Paz {
       }
 
       // Check rules
-      if (!Paz.satisfiesRules(password)) {
+      const rules: PazChecks = {
+        hasUpper: true,
+        hasLower: true,
+        hasNumber: true,
+        startLower: true,
+      };
+      if (!Paz.satisfiesRules(password, rules)) {
         hashSource = hash;
         continue;
       }
