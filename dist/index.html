@@ -11,6 +11,23 @@
 
 <body>
   <div id="bg"></div>
+
+  <div id="overlay">
+    <div>
+      <h1><i class="fa-solid fa-fire"></i> NOPAZ</h1>
+      <br />
+      This is a beta version of NOPAZ. Things may change before the final release.
+      <br />
+      <strong>Do not rely on this version for
+        critical password management.</strong>
+      <br />
+      Please report bugs or issues on <a href="https://github.com/matdombrock/nopaz">GitHub <i
+          class="fa-brands fa-github"></i></a>.
+      <br /><br />
+      <button id="btn-overlay-ok" style="float: right">Got it!</button>
+    </div>
+  </div>
+
   <div id="app">
 
     <h1><i class="fa-solid fa-fire"></i> NOPAZ</h1>
@@ -199,5 +216,10 @@
 
 </body>
 
+<script>
+  document.getElementById('btn-overlay-ok').onclick = function () {
+    document.getElementById('overlay').style.display = 'none';
+  };
+</script>
 
 <script src="bundle.js"></script>
