@@ -17,7 +17,7 @@ type PazUIElements = {
   revision: HTMLInputElement;
   hash: HTMLInputElement;
   // Advanced
-  note: HTMLInputElement;
+  notes: HTMLInputElement;
   minIterations: HTMLInputElement;
   algorithm: HTMLInputElement;
   append: HTMLInputElement;
@@ -51,7 +51,7 @@ class PazUI {
       length: document.getElementById('in-length') as HTMLInputElement,
       revision: document.getElementById('in-revision') as HTMLInputElement,
       hash: document.getElementById('out-hash') as HTMLInputElement,
-      note: document.getElementById('in-note') as HTMLInputElement,
+      notes: document.getElementById('in-notes') as HTMLInputElement,
       minIterations: document.getElementById('in-min-iterations') as HTMLInputElement,
       algorithm: document.getElementById('in-algorithm') as HTMLInputElement,
       append: document.getElementById('in-append') as HTMLInputElement,
@@ -71,7 +71,7 @@ class PazUI {
     this.elements.special.addEventListener('input', () => this.computeHash());
     this.elements.length.addEventListener('input', () => this.computeHash());
     this.elements.revision.addEventListener('input', () => this.computeHash());
-    this.elements.note.addEventListener('input', () => this.computeHash());
+    this.elements.notes.addEventListener('input', () => this.computeHash());
     this.elements.minIterations.addEventListener('input', () => this.computeHash());
     this.elements.append.addEventListener('input', () => this.computeHash());
     this.elements.algorithm.addEventListener('input', () => this.computeHash());
@@ -121,7 +121,7 @@ class PazUI {
     this.elements.special.value = urlParams.get('special') || this.elements.special.value;
     this.elements.length.value = urlParams.get('length') || this.elements.length.value;
     this.elements.revision.value = urlParams.get('revision') || this.elements.revision.value;
-    this.elements.note.value = urlParams.get('note') || this.elements.note.value;
+    this.elements.notes.value = urlParams.get('notes') || this.elements.notes.value;
     this.elements.minIterations.value = urlParams.get('minIterations') || this.elements.minIterations.value;
     this.elements.append.value = urlParams.get('append') || this.elements.append.value;
     this.elements.algorithm.value = urlParams.get('algorithm') || this.elements.algorithm.value;
@@ -135,7 +135,7 @@ class PazUI {
     url.searchParams.set('special', site.special);
     url.searchParams.set('length', site.length.toString());
     url.searchParams.set('revision', site.revision.toString());
-    url.searchParams.set('note', this.elements.note.value);
+    url.searchParams.set('notes', this.elements.notes.value);
     url.searchParams.set('minIterations', site.minIterations.toString());
     url.searchParams.set('append', site.append);
     url.searchParams.set('algorithm', site.algorithm);
@@ -149,7 +149,7 @@ class PazUI {
     url.searchParams.delete('special');
     url.searchParams.delete('length');
     url.searchParams.delete('revision');
-    url.searchParams.delete('note');
+    url.searchParams.delete('notes');
     url.searchParams.delete('minIterations');
     url.searchParams.delete('append');
     url.searchParams.delete('algorithm');
@@ -163,7 +163,7 @@ class PazUI {
       special: this.elements.special.value as SpecialMode,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
-      note: this.elements.note.value,
+      note: this.elements.notes.value,
       minIterations: parseInt(this.elements.minIterations.value, 10),
       algorithm: this.elements.algorithm.value,
       append: this.elements.append.value,
