@@ -87,6 +87,12 @@ class RNG {
     }
     return hash >>> 0;
   }
+  warmup(iterations = 10) {
+    for (let i = 0;i < iterations; i++) {
+      this.get();
+    }
+    return this;
+  }
   get() {
     const a = 1664525;
     const c = 1013904223;
@@ -195,6 +201,7 @@ function passphraseEmoji(seed) {
   const start = 128512;
   const end = 128591;
   const rng = new RNG(seed);
+  rng.warmup(5);
   const codePoint = start + Math.floor(rng.get() * (end - start + 1));
   const emoji = String.fromCodePoint(codePoint);
   return emoji;

@@ -1,3 +1,6 @@
+// Handle special modes for password generation
+// Deterministically generates special characters based on the input password
+
 import RNG from './RNG';
 
 import type { SpecialMode } from './types';

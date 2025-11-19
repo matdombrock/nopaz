@@ -1,3 +1,4 @@
+// This module exports a function that returns a random poem title for use as placeholder text.
 const poem = [
   "Out of the Rolling Ocean the Crowd",
   "When I Heard the Learn’d Astronomer",
