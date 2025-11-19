@@ -23,10 +23,40 @@ type PazChecks = {
   hasUpper: boolean,
   hasLower: boolean,
   hasNumber: boolean,
+  noNumber: boolean,
   startLower: boolean,
 }
 
+type PazSpecialRules = {
+  [key: string]: PazChecks,
+}
+
 export default class Paz {
+
+  private static specialRules: PazSpecialRules = {
+    all: {
+      hasUpper: true,
+      hasLower: true,
+      hasNumber: true,
+      noNumber: false,
+      startLower: true,
+    },
+    legacy: {
+      hasUpper: true,
+      hasLower: true,
+      hasNumber: true,
+      noNumber: false,
+      startLower: true,
+    },
+    none: {
+      hasUpper: false,
+      hasLower: false,
+      hasNumber: false,
+      noNumber: false,
+      startLower: false,
+    }
+  };
+
   private static customBase64Encode(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer);
     let b64 = btoa(String.fromCharCode(...bytes));
@@ -38,20 +68,28 @@ export default class Paz {
   }
 
   private static satisfiesRules(password: string, rules: PazChecks): boolean {
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const startLower = /^[a-z]/.test(password);
     let pass = true;
-    if (rules.hasUpper && !/[A-Z]/.test(password)) {
+    if (rules.hasUpper && !hasUpper) {
       pass = false;
       dbg('! Failed uppercase check.');
     }
-    if (rules.hasLower && !/[a-z]/.test(password)) {
+    if (rules.hasLower && !hasLower) {
       pass = false;
       dbg('! Failed lowercase check.');
     }
-    if (rules.hasNumber && !/[0-9]/.test(password)) {
+    if (rules.hasNumber && !hasNumber) {
       pass = false;
       dbg('! Failed number check.');
     }
-    if (rules.startLower && !/^[a-z]/.test(password)) {
+    if (rules.noNumber && hasNumber) {
+      pass = false;
+      dbg('! Failed no-number check.');
+    }
+    if (rules.startLower && !startLower) {
       pass = false;
       dbg('! Failed start lowercase check.');
     }
@@ -87,6 +125,12 @@ export default class Paz {
     }
     const algorithm = algorithms[site.algorithm] || 'SHA-512';
 
+    const rules = Paz.specialRules[site.special ?? 'all'];
+    if (!rules) {
+      throw new Error(`Unknown special rules "${site.special}".`);
+    }
+    dbg('Rules: ' + JSON.stringify(rules) + ' ');
+
     while (true) {
       // (recursion point)
       // Hash source
@@ -106,13 +150,6 @@ export default class Paz {
         continue;
       }
 
-      // Check rules
-      const rules: PazChecks = {
-        hasUpper: true,
-        hasLower: true,
-        hasNumber: true,
-        startLower: true,
-      };
       if (!Paz.satisfiesRules(password, rules)) {
         hashSource = hash;
         continue;
