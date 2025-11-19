@@ -276,26 +276,26 @@ class PazUI {
   }
   updateSiteQueryParams(site) {
     const url = new URL(window.location.href);
-    url.searchParams.set("site", site.siteId);
-    url.searchParams.set("special", site.special);
-    url.searchParams.set("length", site.length.toString());
-    url.searchParams.set("revision", site.revision.toString());
-    url.searchParams.set("notes", this.elements.notes.value);
-    url.searchParams.set("minIterations", site.minIterations.toString());
-    url.searchParams.set("append", site.append);
-    url.searchParams.set("algorithm", site.algorithm);
+    url.searchParams.set("ste", site.siteId);
+    url.searchParams.set("spc", site.special);
+    url.searchParams.set("len", site.length.toString());
+    url.searchParams.set("rev", site.revision.toString());
+    url.searchParams.set("nts", site.note);
+    url.searchParams.set("mit", site.minIterations.toString());
+    url.searchParams.set("app", site.append);
+    url.searchParams.set("alg", site.algorithm);
     window.history.replaceState({}, "", url.toString());
   }
   clearSiteQueryParams() {
     const url = new URL(window.location.href);
-    url.searchParams.delete("site");
-    url.searchParams.delete("special");
-    url.searchParams.delete("length");
-    url.searchParams.delete("revision");
-    url.searchParams.delete("notes");
-    url.searchParams.delete("minIterations");
-    url.searchParams.delete("append");
-    url.searchParams.delete("algorithm");
+    url.searchParams.delete("ste");
+    url.searchParams.delete("spc");
+    url.searchParams.delete("len");
+    url.searchParams.delete("rev");
+    url.searchParams.delete("nts");
+    url.searchParams.delete("mit");
+    url.searchParams.delete("app");
+    url.searchParams.delete("alg");
     window.history.replaceState({}, "", url.toString());
   }
   captureSite() {

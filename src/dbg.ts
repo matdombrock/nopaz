@@ -6,11 +6,11 @@ export default function dbg(message: string): void {
   // Check for browser environment
   if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
-    isDbg = urlParams.get('debug') === '1';
+    isDbg = urlParams.get('dbg') === '1';
   }
 
   // Check for Node.js environment
-  if (typeof process !== 'undefined' && process.env && process.env.DEBUG === '1') {
+  if (typeof process !== 'undefined' && process.env && process.env.DBG === '1') {
     isDbg = true;
   }
 

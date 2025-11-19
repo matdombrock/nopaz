@@ -8,6 +8,7 @@ import passphraseEmoji from './emoji';
 
 // A list of all UI elements controlled by PazUI
 type PazUIElements = {
+  // Inputs/Outputs
   master: HTMLInputElement;
   passphraseEmpji: HTMLSpanElement;
   site: HTMLInputElement;
@@ -20,7 +21,7 @@ type PazUIElements = {
   minIterations: HTMLInputElement;
   algorithm: HTMLInputElement;
   append: HTMLInputElement;
-  //
+  // UI Controls
   btnExtras: HTMLButtonElement;
   btnExtrasArrow: HTMLSpanElement;
   uiExtrasContainer: HTMLDivElement;
@@ -116,42 +117,42 @@ class PazUI {
   // and populate the input fields
   private getSiteQueryParams(): void {
     const urlParams = new URLSearchParams(window.location.search);
-    this.elements.site.value = urlParams.get('site') || this.elements.site.value;
-    this.elements.special.value = urlParams.get('special') || this.elements.special.value;
-    this.elements.length.value = urlParams.get('length') || this.elements.length.value;
-    this.elements.revision.value = urlParams.get('revision') || this.elements.revision.value;
-    this.elements.notes.value = urlParams.get('notes') || this.elements.notes.value;
-    this.elements.minIterations.value = urlParams.get('minIterations') || this.elements.minIterations.value;
-    this.elements.append.value = urlParams.get('append') || this.elements.append.value;
-    this.elements.algorithm.value = urlParams.get('algorithm') || this.elements.algorithm.value;
+    this.elements.site.value = urlParams.get('ste') || this.elements.site.value;
+    this.elements.special.value = urlParams.get('spc') || this.elements.special.value;
+    this.elements.length.value = urlParams.get('len') || this.elements.length.value;
+    this.elements.revision.value = urlParams.get('rev') || this.elements.revision.value;
+    this.elements.notes.value = urlParams.get('nts') || this.elements.notes.value;
+    this.elements.minIterations.value = urlParams.get('mit') || this.elements.minIterations.value;
+    this.elements.append.value = urlParams.get('app') || this.elements.append.value;
+    this.elements.algorithm.value = urlParams.get('alg') || this.elements.algorithm.value;
   }
 
   // Update URL query parameters with current site settings
   // without reloading the page
   private updateSiteQueryParams(site: PazSite): void {
     const url = new URL(window.location.href);
-    url.searchParams.set('site', site.siteId);
-    url.searchParams.set('special', site.special);
-    url.searchParams.set('length', site.length.toString());
-    url.searchParams.set('revision', site.revision.toString());
-    url.searchParams.set('notes', this.elements.notes.value);
-    url.searchParams.set('minIterations', site.minIterations.toString());
-    url.searchParams.set('append', site.append);
-    url.searchParams.set('algorithm', site.algorithm);
+    url.searchParams.set('ste', site.siteId);
+    url.searchParams.set('spc', site.special);
+    url.searchParams.set('len', site.length.toString());
+    url.searchParams.set('rev', site.revision.toString());
+    url.searchParams.set('nts', site.note);
+    url.searchParams.set('mit', site.minIterations.toString());
+    url.searchParams.set('app', site.append);
+    url.searchParams.set('alg', site.algorithm);
     window.history.replaceState({}, '', url.toString());
   }
 
   // Clear site-related URL query parameters
   private clearSiteQueryParams(): void {
     const url = new URL(window.location.href);
-    url.searchParams.delete('site');
-    url.searchParams.delete('special');
-    url.searchParams.delete('length');
-    url.searchParams.delete('revision');
-    url.searchParams.delete('notes');
-    url.searchParams.delete('minIterations');
-    url.searchParams.delete('append');
-    url.searchParams.delete('algorithm');
+    url.searchParams.delete('ste');
+    url.searchParams.delete('spc');
+    url.searchParams.delete('len');
+    url.searchParams.delete('rev');
+    url.searchParams.delete('nts');
+    url.searchParams.delete('mit');
+    url.searchParams.delete('app');
+    url.searchParams.delete('alg');
     window.history.replaceState({}, '', url.toString());
   }
 
