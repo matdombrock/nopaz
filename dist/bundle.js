@@ -283,6 +283,7 @@ class PazUI {
     url.searchParams.set("minIterations", site.minIterations.toString());
     url.searchParams.set("append", site.append);
     url.searchParams.set("algorithm", site.algorithm);
+    window.history.replaceState({}, "", url.toString());
   }
   clearSiteQueryParams() {
     const url = new URL(window.location.href);

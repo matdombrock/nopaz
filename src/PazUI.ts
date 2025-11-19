@@ -139,7 +139,7 @@ class PazUI {
     url.searchParams.set('minIterations', site.minIterations.toString());
     url.searchParams.set('append', site.append);
     url.searchParams.set('algorithm', site.algorithm);
-
+    window.history.replaceState({}, '', url.toString());
   }
 
   // Clear site-related URL query parameters
