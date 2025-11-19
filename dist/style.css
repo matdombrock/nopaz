@@ -228,7 +228,7 @@ textarea {
 .input-hider span {
   position: absolute;
   top: 50%;
-  left: 10%;
+  left: 4rem;
   transform: translate(-50%, -50%);
   color: var(--text3);
   font-size: 1.5rem;
