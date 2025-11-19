@@ -31,6 +31,9 @@ type PazUIElements = {
 
 class PazUI {
   private elements: PazUIElements;
+  private state = {
+    hidden: false,
+  }
   constructor() {
     this.elements = {
       master: document.getElementById('in-master') as HTMLInputElement,
@@ -199,12 +202,35 @@ class PazUI {
     window.history.replaceState({}, '', url.toString());
   }
   private toggleView(): void {
-    this.elements.master.type = this.elements.master.type === 'password' ? 'text' : 'password';
+    // this.elements.master.type = this.elements.master.type === 'password' ? 'text' : 'password';
 
-    this.elements.hash.type = this.elements.hash.type === 'password' ? 'text' : 'password';
+    // this.elements.hash.type = this.elements.hash.type === 'password' ? 'text' : 'password';
 
-    this.elements.btnView.innerHTML = (this.elements.master.type === 'password') ?
+    let hidden = this.state.hidden;
+    hidden = !hidden;
+    this.state.hidden = hidden;
+
+    this.elements.btnView.innerHTML = hidden ?
       '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+
+    if (!hidden) {
+      // Hide all input-hider class instances
+      console.log('Hiding input-hider elements');
+      const inputHiders = document.getElementsByClassName('input-hider');
+      for (let i = 0; i < inputHiders.length; i++) {
+        const element = inputHiders[i] as HTMLElement;
+        element.style.display = 'none';
+      }
+    }
+    else {
+      // Show all input-hider class instances
+      console.log('Showing input-hider elements');
+      const inputHiders = document.getElementsByClassName('input-hider');
+      for (let i = 0; i < inputHiders.length; i++) {
+        const element = inputHiders[i] as HTMLElement;
+        element.style.display = 'block';
+      }
+    }
   }
   public showTip(elementId: string): void {
     const element = document.getElementById(elementId);

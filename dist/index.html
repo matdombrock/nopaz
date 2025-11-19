@@ -46,7 +46,10 @@
       <br>
       Example: "The quick brown fox jumps over the lazy dog"
     </div>
-    <input id="in-master" type="text" placeholder="The quick brown fox jumps over the lazy dog" />
+    <div class="input-hider-area">
+      <div class="input-hider"><span>Hidden...<span></div>
+      <input id="in-master" type="text" placeholder="The quick brown fox jumps over the lazy dog" />
+    </div>
 
     <label for="in-site"><i class="fa-solid fa-id-card"></i> Site Name</label>
     <span class="tool-area">
@@ -179,7 +182,10 @@
       This password is generated locally in your browser and is not sent to any server. Make sure to remember your
       passphrase and site identifier to regenerate it in the future.
     </div>
-    <input id="out-hash" type="text" placeholder="Waiting For Passphrase..." readonly />
+    <div class="input-hider-area">
+      <div class="input-hider"><span>Hidden...</span></div>
+      <input id="out-hash" type="text" placeholder="Waiting For Passphrase..." readonly />
+    </div>
 
     <div id="tip-clip-btm" class="tip tip-strong">
       CLIPBOARD

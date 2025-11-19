@@ -3,6 +3,7 @@ export type PazSite = {
   special: string;
   length: number;
   revision: number;
+  note: string;
   minIterations: number;
   algorithm: string;
   append: string;

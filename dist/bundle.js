@@ -99,6 +99,9 @@ function getPoemLine() {
 // src/PazUI.ts
 class PazUI {
   elements;
+  state = {
+    hidden: false
+  };
   constructor() {
     this.elements = {
       master: document.getElementById("in-master"),
@@ -243,9 +246,25 @@ class PazUI {
     window.history.replaceState({}, "", url.toString());
   }
   toggleView() {
-    this.elements.master.type = this.elements.master.type === "password" ? "text" : "password";
-    this.elements.hash.type = this.elements.hash.type === "password" ? "text" : "password";
-    this.elements.btnView.innerHTML = this.elements.master.type === "password" ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    let hidden = this.state.hidden;
+    hidden = !hidden;
+    this.state.hidden = hidden;
+    this.elements.btnView.innerHTML = hidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    if (!hidden) {
+      console.log("Hiding input-hider elements");
+      const inputHiders = document.getElementsByClassName("input-hider");
+      for (let i = 0;i < inputHiders.length; i++) {
+        const element = inputHiders[i];
+        element.style.display = "none";
+      }
+    } else {
+      console.log("Showing input-hider elements");
+      const inputHiders = document.getElementsByClassName("input-hider");
+      for (let i = 0;i < inputHiders.length; i++) {
+        const element = inputHiders[i];
+        element.style.display = "block";
+      }
+    }
   }
   showTip(elementId) {
     const element = document.getElementById(elementId);

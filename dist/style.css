@@ -7,6 +7,8 @@
 }
 
 :root {
+  --bg-grad: linear-gradient(135deg, #222222, #222233);
+  --bg-grad2: linear-gradient(135deg, #333344, #474047, #333333);
   --input-bg: #333333;
   --input-color: #ffffff;
   --text2: #cccccc;
@@ -44,7 +46,7 @@
 
 html {
   /* background gradient */
-  background: linear-gradient(135deg, #222222, #222233);
+  background: var(--bg-grad);
   color: var(--input-color);
   min-height: 100%;
 }
@@ -295,6 +297,33 @@ textarea {
 
 #btn-view {
   float: left;
+}
+
+.input-hider-area {
+  width: 100%;
+  position: relative;
+}
+
+.input-hider {
+  position: absolute;
+  top: 10%;
+  right: 0;
+  width: 100%;
+  height: 90%;
+  background: var(--bg-grad2);
+  pointer-events: none;
+  border-radius: var(--round);
+  overflow: hidden;
+  display: none;
+}
+
+.input-hider span {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  color: var(--text3);
+  font-size: 1.5rem;
 }
 
 #footer {
