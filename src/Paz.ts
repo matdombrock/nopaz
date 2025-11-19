@@ -17,6 +17,7 @@ https://github.com/eblade/paz/tree/master?tab=readme-ov-file#the-algorithm-in-de
 */
 
 import type { PazSite } from './types';
+import dbg from './dbg';
 
 function customBase64Encode(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -38,20 +39,15 @@ function satisfiesRules(password: string): boolean {
 
 export default class Paz {
   public static async hash(master: string, site: PazSite): Promise<string> {
-    // Check for debug mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const debug = urlParams.get('debug') === '1';
-    if (debug) {
-      console.log('Paz debug mode enabled.');
-      console.log(`Master: ${master}`);
-      console.log(`Site: ${JSON.stringify(site)}`);
-    }
+    dbg('Paz debug mode enabled.');
+    dbg(`Master: ${master}`);
+    dbg(`Site: ${JSON.stringify(site)}`);
     // Construct source string
     let source = `${master}:${site.siteId}`;
     if (typeof site.revision === 'number' && site.revision > 0) {
       source += `${site.revision}`;
     }
-    if (debug) console.log(`Initial source: ${source}`);
+    dbg(`Initial source: ${source}`);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
     const addition = site.append ?? '';
@@ -66,8 +62,8 @@ export default class Paz {
       'SHA-512': 'SHA-512',
       'SHA-256': 'SHA-256',
     };
-    if (algorithms[site.algorithm] === undefined && debug) {
-      console.warn(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
+    if (algorithms[site.algorithm] === undefined) {
+      dbg(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
     }
     const algorithm = algorithms[site.algorithm] || 'SHA-512';
 
@@ -79,7 +75,7 @@ export default class Paz {
       const hashBuffer = await crypto.subtle.digest(algorithm, data);
       // Custom base64 encode
       const hash = customBase64Encode(hashBuffer);
-      if (debug) console.log(`Iteration ${iteration}: hash=${hash}`);
+      dbg(`Iteration ${iteration}: hash=${hash}`);
       // Cut hash to length
       password = hash.slice(0, passwordLength);
       iteration += 1;
@@ -98,7 +94,7 @@ export default class Paz {
 
       break;
     }
-    if (debug) console.log(`Paz generated password in ${iteration} iterations.`);
+    dbg(`Paz generated password in ${iteration} iterations.`);
 
     // Return password
     return `${password}${addition}`;

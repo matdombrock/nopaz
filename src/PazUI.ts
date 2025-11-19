@@ -3,6 +3,7 @@ import type { PazSite } from './types';
 import Paz from './Paz';
 import Special from './Special';
 import type { SpecialMode } from './types';
+import dbg from './dbg'
 import getPoemLine from './poem';
 import passphraseEmoji from './emoji';
 
@@ -167,7 +168,7 @@ class PazUI {
 
   // Compute the password hash and update the output field
   private async computeHash(): Promise<void> {
-    console.log('Computing hash...');
+    dbg('Computing hash...');
     const site = this.captureSite();
     const master = this.elements.master.value;
     let hash = '';
@@ -191,8 +192,8 @@ class PazUI {
       hash = Special.generate(hash, site.special);
     }
 
-    console.log('Site data:', site);
-    console.log('Computed hash:', hash);
+    dbg('Site data: ' + JSON.stringify(site));
+    dbg('Computed hash: ' + hash);
     this.elements.hash.value = hash;
 
     this.elements.tipClip.style.display = 'none';
@@ -217,7 +218,7 @@ class PazUI {
 
     if (!hidden) {
       // Hide all input-hider class instances
-      console.log('Hiding input-hider elements');
+      dbg('Hiding input-hider elements');
       const inputHiders = document.getElementsByClassName('input-hider');
       for (let i = 0; i < inputHiders.length; i++) {
         const element = inputHiders[i] as HTMLElement;
@@ -226,7 +227,7 @@ class PazUI {
     }
     else {
       // Show all input-hider class instances
-      console.log('Showing input-hider elements');
+      dbg('Showing input-hider elements');
       const inputHiders = document.getElementsByClassName('input-hider');
       for (let i = 0; i < inputHiders.length; i++) {
         const element = inputHiders[i] as HTMLElement;

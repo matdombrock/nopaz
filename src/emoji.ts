@@ -7,6 +7,5 @@ export default function passphraseEmoji(seed: string): string {
   const rng = new RNG(seed);
   const codePoint = start + Math.floor(rng.get() * (end - start + 1));
   const emoji = String.fromCodePoint(codePoint);
-  console.log(`Random emoji code point for seed "${seed}": U+${codePoint.toString(16).toUpperCase()}`);
   return emoji;
 }

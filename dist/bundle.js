@@ -1,3 +1,12 @@
+// src/dbg.ts
+function dbg(message) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDbg = urlParams.get("debug") === "1";
+  if (isDbg) {
+    console.log(message);
+  }
+}
+
 // src/Paz.ts
 function customBase64Encode(buffer) {
   const bytes = new Uint8Array(buffer);
@@ -16,19 +25,14 @@ function satisfiesRules(password) {
 
 class Paz {
   static async hash(master, site) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const debug = urlParams.get("debug") === "1";
-    if (debug) {
-      console.log("Paz debug mode enabled.");
-      console.log(`Master: ${master}`);
-      console.log(`Site: ${JSON.stringify(site)}`);
-    }
+    dbg("Paz debug mode enabled.");
+    dbg(`Master: ${master}`);
+    dbg(`Site: ${JSON.stringify(site)}`);
     let source = `${master}:${site.siteId}`;
     if (typeof site.revision === "number" && site.revision > 0) {
       source += `${site.revision}`;
     }
-    if (debug)
-      console.log(`Initial source: ${source}`);
+    dbg(`Initial source: ${source}`);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
     const addition = site.append ?? "";
@@ -41,8 +45,8 @@ class Paz {
       "SHA-512": "SHA-512",
       "SHA-256": "SHA-256"
     };
-    if (algorithms[site.algorithm] === undefined && debug) {
-      console.warn(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
+    if (algorithms[site.algorithm] === undefined) {
+      dbg(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
     }
     const algorithm = algorithms[site.algorithm] || "SHA-512";
     while (true) {
@@ -50,8 +54,7 @@ class Paz {
       const data = encoder.encode(hashSource);
       const hashBuffer = await crypto.subtle.digest(algorithm, data);
       const hash = customBase64Encode(hashBuffer);
-      if (debug)
-        console.log(`Iteration ${iteration}: hash=${hash}`);
+      dbg(`Iteration ${iteration}: hash=${hash}`);
       password = hash.slice(0, passwordLength);
       iteration += 1;
       if (iteration < minIterations) {
@@ -64,8 +67,7 @@ class Paz {
       }
       break;
     }
-    if (debug)
-      console.log(`Paz generated password in ${iteration} iterations.`);
+    dbg(`Paz generated password in ${iteration} iterations.`);
     return `${password}${addition}`;
   }
 }
@@ -195,7 +197,6 @@ function passphraseEmoji(seed) {
   const rng = new RNG(seed);
   const codePoint = start + Math.floor(rng.get() * (end - start + 1));
   const emoji = String.fromCodePoint(codePoint);
-  console.log(`Random emoji code point for seed "${seed}": U+${codePoint.toString(16).toUpperCase()}`);
   return emoji;
 }
 
@@ -300,7 +301,7 @@ class PazUI {
     };
   }
   async computeHash() {
-    console.log("Computing hash...");
+    dbg("Computing hash...");
     const site = this.captureSite();
     const master = this.elements.master.value;
     let hash = "";
@@ -318,8 +319,8 @@ class PazUI {
     if (hash !== "") {
       hash = Special.generate(hash, site.special);
     }
-    console.log("Site data:", site);
-    console.log("Computed hash:", hash);
+    dbg("Site data: " + JSON.stringify(site));
+    dbg("Computed hash: " + hash);
     this.elements.hash.value = hash;
     this.elements.tipClip.style.display = "none";
     this.updateSiteQueryParams(site);
@@ -333,14 +334,14 @@ class PazUI {
     this.state.hidden = hidden;
     this.elements.btnView.innerHTML = hidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
     if (!hidden) {
-      console.log("Hiding input-hider elements");
+      dbg("Hiding input-hider elements");
       const inputHiders = document.getElementsByClassName("input-hider");
       for (let i = 0;i < inputHiders.length; i++) {
         const element = inputHiders[i];
         element.style.display = "none";
       }
     } else {
-      console.log("Showing input-hider elements");
+      dbg("Showing input-hider elements");
       const inputHiders = document.getElementsByClassName("input-hider");
       for (let i = 0;i < inputHiders.length; i++) {
         const element = inputHiders[i];
