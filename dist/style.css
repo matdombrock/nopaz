@@ -27,10 +27,6 @@
 
 }
 
-.warn {
-  color: var(--warn);
-}
-
 * {
   font-family: Arial, sans-serif;
   font-family: 'Agave', sans-serif;
@@ -44,23 +40,16 @@
   }
 }
 
-html {
+html, body {
   /* background gradient */
   background: var(--bg-grad);
   color: var(--input-color);
   min-height: 100%;
 }
 
-body {}
-
 h1 {
   font-size: 2em;
   margin-bottom: 0.2em;
-}
-
-#app {
-  max-width: var(--width);
-  margin: auto;
 }
 
 label {
@@ -139,6 +128,10 @@ textarea {
   border-radius: var(--round);
 }
 
+.warn {
+  color: var(--warn);
+}
+
 .fa-solid {
   vertical-align: middle;
 }
@@ -199,6 +192,43 @@ textarea {
   padding: 0.5rem;
 }
 
+.acc-arrow {
+  float: right;
+  transition: transform 0.3s ease;
+}
+
+.input-hider-area {
+  width: 100%;
+  position: relative;
+}
+
+.input-hider {
+  position: absolute;
+  top: 10%;
+  right: 0;
+  width: 100%;
+  height: 90%;
+  background: var(--bg-grad2);
+  pointer-events: none;
+  border-radius: var(--round);
+  overflow: hidden;
+  display: none;
+}
+
+.input-hider span {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  color: var(--text3);
+  font-size: 1.5rem;
+}
+
+#app {
+  max-width: var(--width);
+  margin: auto;
+}
+
 #out-hash {
   font-weight: bold;
   font-size: 1.2em;
@@ -220,11 +250,6 @@ textarea {
   color: var(--text2);
   text-align: left;
   font-size: 1.2rem;
-}
-
-.acc-arrow {
-  float: right;
-  transition: transform 0.3s ease;
 }
 
 #btn-extras:hover {
@@ -297,33 +322,6 @@ textarea {
 
 #btn-view {
   float: left;
-}
-
-.input-hider-area {
-  width: 100%;
-  position: relative;
-}
-
-.input-hider {
-  position: absolute;
-  top: 10%;
-  right: 0;
-  width: 100%;
-  height: 90%;
-  background: var(--bg-grad2);
-  pointer-events: none;
-  border-radius: var(--round);
-  overflow: hidden;
-  display: none;
-}
-
-.input-hider span {
-  position: absolute;
-  top: 50%;
-  left: 10%;
-  transform: translate(-50%, -50%);
-  color: var(--text3);
-  font-size: 1.5rem;
 }
 
 #footer {
