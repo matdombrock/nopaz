@@ -107,6 +107,10 @@ class PazUI {
 
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
+
+    // Update passphrase emoji (empty)
+    this.elements.passphraseEmpji.innerText = passphraseEmoji('');
+
   }
 
   // Get site parameters from URL query parameters

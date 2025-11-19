@@ -40,7 +40,8 @@
   }
 }
 
-html, body {
+html,
+body {
   /* background gradient */
   background: var(--bg-grad);
   color: var(--input-color);
@@ -234,19 +235,31 @@ textarea {
   font-size: 1.5rem;
 }
 
+#top-btns {
+  display: flex;
+  width: 100%;
+  margin-top: 10px;
+  height: 4rem;
+  max-height: 4rem;
+}
+
 #passphrase-emoji {
   position: absolute;
   top: 25%;
   right: 0;
   margin-right: 0.5rem;
-  opacity: 0.5;
+  opacity: 0.3;
   font-size: 1.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  user-select: none;
 }
+
 #passphrase-emoji:hover {
   opacity: 1;
   font-size: 5rem;
   right: -2rem;
+  transform: rotate(-8deg);
 }
 
 #app {

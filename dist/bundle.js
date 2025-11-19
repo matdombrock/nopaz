@@ -87,7 +87,7 @@ class RNG {
     }
     return hash >>> 0;
   }
-  warmup(iterations = 10) {
+  warm(iterations = 10) {
     for (let i = 0;i < iterations; i++) {
       this.get();
     }
@@ -197,11 +197,11 @@ function getPoemLine() {
 }
 
 // src/emoji.ts
-function passphraseEmoji(seed) {
+function passphraseEmoji(passphrase) {
   const start = 128512;
   const end = 128591;
-  const rng = new RNG(seed);
-  rng.warmup(5);
+  const rng = new RNG(passphrase);
+  rng.warm(5);
   const codePoint = start + Math.floor(rng.get() * (end - start + 1));
   const emoji = String.fromCodePoint(codePoint);
   return emoji;
@@ -260,6 +260,7 @@ class PazUI {
     this.elements.btnBookmark.addEventListener("click", () => this.bookmark());
     this.elements.btnReset.addEventListener("click", () => this.clearAll(true, true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
+    this.elements.passphraseEmpji.innerText = passphraseEmoji("");
   }
   getSiteQueryParams() {
     const urlParams = new URLSearchParams(window.location.search);
