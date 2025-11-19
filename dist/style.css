@@ -288,10 +288,6 @@ textarea {
   font-size: 1rem;
 }
 
-#io-replication {
-  display: none;
-}
-
 #btn-reset,
 #btn-view,
 #btn-bookmark {

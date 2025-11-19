@@ -13,7 +13,6 @@ type PazUIElements = {
   length: HTMLInputElement;
   revision: HTMLInputElement;
   hash: HTMLInputElement;
-  replication: HTMLInputElement;
   // Advanced
   note: HTMLInputElement;
   minIterations: HTMLInputElement;
@@ -48,7 +47,6 @@ class PazUI {
       length: document.getElementById('in-length') as HTMLInputElement,
       revision: document.getElementById('in-revision') as HTMLInputElement,
       hash: document.getElementById('out-hash') as HTMLInputElement,
-      replication: document.getElementById('io-replication') as HTMLInputElement,
       note: document.getElementById('in-note') as HTMLInputElement,
       minIterations: document.getElementById('in-min-iterations') as HTMLInputElement,
       algorithm: document.getElementById('in-algorithm') as HTMLInputElement,
@@ -133,6 +131,7 @@ class PazUI {
     url.searchParams.set('minIterations', site.minIterations.toString());
     url.searchParams.set('append', site.append);
     url.searchParams.set('algorithm', site.algorithm);
+
   }
 
   // Clear site-related URL query parameters
@@ -274,7 +273,6 @@ class PazUI {
     this.elements.revision.value = '1';
     this.elements.master.placeholder = getPoemLine();
     this.elements.hash.value = '';
-    this.elements.replication.value = '';
     this.elements.minIterations.value = '10';
     this.elements.algorithm.value = 'sha512';
     this.elements.append.value = '';

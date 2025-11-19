@@ -202,7 +202,6 @@ class PazUI {
       length: document.getElementById("in-length"),
       revision: document.getElementById("in-revision"),
       hash: document.getElementById("out-hash"),
-      replication: document.getElementById("io-replication"),
       note: document.getElementById("in-note"),
       minIterations: document.getElementById("in-min-iterations"),
       algorithm: document.getElementById("in-algorithm"),
@@ -373,7 +372,6 @@ class PazUI {
     this.elements.revision.value = "1";
     this.elements.master.placeholder = getPoemLine();
     this.elements.hash.value = "";
-    this.elements.replication.value = "";
     this.elements.minIterations.value = "10";
     this.elements.algorithm.value = "sha512";
     this.elements.append.value = "";
