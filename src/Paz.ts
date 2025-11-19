@@ -36,7 +36,7 @@ function satisfiesRules(password: string): boolean {
   return hasUpper && hasLower && hasNumber && startsLower;
 }
 
-export class Paz {
+export default class Paz {
   public static async hash(master: string, site: PazSite): Promise<string> {
     // Check for debug mode
     const urlParams = new URLSearchParams(window.location.search);

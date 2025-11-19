@@ -1,6 +1,8 @@
 import type { PazSite } from './types';
 
-import { Paz } from './Paz';
+import Paz from './Paz';
+import Special from './Special';
+import type { SpecialMode } from './types';
 import getPoemLine from './poem';
 
 type PazUIElements = {
@@ -163,7 +165,7 @@ class PazUI {
   private captureSite(): PazSite {
     return {
       siteId: this.elements.site.value,
-      special: this.elements.special.value,
+      special: this.elements.special.value as SpecialMode,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
       note: this.elements.note.value,
@@ -191,6 +193,10 @@ class PazUI {
     else {
       hash = '';
     }
+
+    // Apply special
+    hash = Special.generate(hash, site.special);
+
     console.log('Site data:', site);
     console.log('Computed hash:', hash);
     this.elements.hash.value = hash;
@@ -245,7 +251,7 @@ class PazUI {
   private clearAll(compute: boolean, query: boolean): void {
     this.elements.master.value = '';
     this.elements.site.value = '';
-    this.elements.special.value = 'all';
+    this.elements.special.value = 'default';
     this.elements.length.value = '16';
     this.elements.revision.value = '1';
     this.elements.master.placeholder = getPoemLine();
