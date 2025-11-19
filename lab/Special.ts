@@ -3,9 +3,9 @@
 
 import RNG from './RNG';
 
-import type { SpecialMode } from './types';
+import type { PazSpecialMode } from './types';
 
-type SpecialModeList = { [key in SpecialMode]: (password: string) => string }
+type SpecialModeList = { [key in PazSpecialMode]: (password: string) => string }
 
 export default class Special {
   // Replace character at position with char
@@ -82,7 +82,7 @@ export default class Special {
     none: Special.mNone,
   };
   // Generate a special password based on the mode
-  public static generate(password: string, mode: SpecialMode): string {
+  public static generate(password: string, mode: PazSpecialMode): string {
     const func = Special.modes[mode] || Special.mNone;
     return func(password);
   }

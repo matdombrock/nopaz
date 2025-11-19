@@ -1,38 +1,100 @@
 // src/dbg.ts
 function dbg(message) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDbg = urlParams.get("debug") === "1";
+  let isDbg = false;
+  if (typeof window !== "undefined" && typeof window.location !== "undefined") {
+    const urlParams = new URLSearchParams(window.location.search);
+    isDbg = urlParams.get("debug") === "1";
+  }
+  if (typeof process !== "undefined" && process.env && process.env.DEBUG === "1") {
+    isDbg = true;
+  }
   if (isDbg) {
     console.log(message);
   }
 }
 
 // src/Paz.ts
-function customBase64Encode(buffer) {
-  const bytes = new Uint8Array(buffer);
-  let b64 = btoa(String.fromCharCode(...bytes));
-  b64 = b64.replace(/\+/g, "9").replace(/\//g, "8");
-  b64 = b64.replace(/=+$/, (match) => "A".repeat(match.length));
-  return b64;
-}
-function satisfiesRules(password) {
-  const hasUpper = /[A-Z]/.test(password);
-  const hasLower = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const startsLower = /^[a-z]/.test(password);
-  return hasUpper && hasLower && hasNumber && startsLower;
-}
-
 class Paz {
+  static specialRules = {
+    all: {
+      noSymbol: false,
+      hasSymbol: true,
+      hasUpper: true,
+      hasLower: true,
+      hasNumber: true,
+      noNumber: false,
+      startLower: true
+    },
+    legacy: {
+      noSymbol: true,
+      hasSymbol: false,
+      hasUpper: true,
+      hasLower: true,
+      hasNumber: true,
+      noNumber: false,
+      startLower: true
+    },
+    none: {
+      noSymbol: false,
+      hasSymbol: false,
+      hasUpper: false,
+      hasLower: false,
+      hasNumber: false,
+      noNumber: false,
+      startLower: false
+    }
+  };
+  static customBase64Encode(buffer, rules) {
+    const bytes = new Uint8Array(buffer);
+    let b64 = btoa(String.fromCharCode(...bytes));
+    if (rules.noSymbol) {
+      b64 = b64.replace(/\+/g, "9").replace(/\//g, "8");
+      b64 = b64.replace(/=+$/, (match) => "A".repeat(match.length));
+    }
+    return b64;
+  }
+  static satisfiesRules(password, rules) {
+    const hasSymbol = /[+/]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const startLower = /^[a-z]/.test(password);
+    let pass = true;
+    if (rules.hasSymbol && !hasSymbol) {
+      pass = false;
+      dbg("! Failed symbol check.");
+    }
+    if (rules.hasUpper && !hasUpper) {
+      pass = false;
+      dbg("! Failed uppercase check.");
+    }
+    if (rules.hasLower && !hasLower) {
+      pass = false;
+      dbg("! Failed lowercase check.");
+    }
+    if (rules.hasNumber && !hasNumber) {
+      pass = false;
+      dbg("! Failed number check.");
+    }
+    if (rules.noNumber && hasNumber) {
+      pass = false;
+      dbg("! Failed no-number check.");
+    }
+    if (rules.startLower && !startLower) {
+      pass = false;
+      dbg("! Failed start lowercase check.");
+    }
+    return pass;
+  }
   static async hash(master, site) {
     dbg("Paz debug mode enabled.");
     dbg(`Master: ${master}`);
-    dbg(`Site: ${JSON.stringify(site)}`);
-    let source = `${master}:${site.siteId}`;
+    dbg(`Site: ${JSON.stringify(site)} `);
+    let source = `${master}:${site.siteId} `;
     if (typeof site.revision === "number" && site.revision > 0) {
-      source += `${site.revision}`;
+      source += `${site.revision} `;
     }
-    dbg(`Initial source: ${source}`);
+    dbg(`Initial source: ${source} `);
     const minIterations = site.minIterations ?? 1;
     const passwordLength = site.length ?? 12;
     const addition = site.append ?? "";
@@ -46,30 +108,61 @@ class Paz {
       "SHA-256": "SHA-256"
     };
     if (algorithms[site.algorithm] === undefined) {
-      dbg(`Unknown algorithm "${site.algorithm}", defaulting to SHA-512.`);
+      dbg(`Unknown algorithm "${site.algorithm}", defaulting to SHA - 512.`);
     }
     const algorithm = algorithms[site.algorithm] || "SHA-512";
+    const rules = Paz.specialRules[site.special ?? "all"];
+    if (!rules) {
+      throw new Error(`Unknown special rules "${site.special}".`);
+    }
+    dbg("Rules: " + JSON.stringify(rules) + " ");
     while (true) {
       const encoder = new TextEncoder;
       const data = encoder.encode(hashSource);
       const hashBuffer = await crypto.subtle.digest(algorithm, data);
-      const hash = customBase64Encode(hashBuffer);
-      dbg(`Iteration ${iteration}: hash=${hash}`);
+      const hash = Paz.customBase64Encode(hashBuffer, rules);
       password = hash.slice(0, passwordLength);
+      dbg(`Iteration ${iteration}: password = ${password} `);
       iteration += 1;
       if (iteration < minIterations) {
         hashSource = hash;
         continue;
       }
-      if (!satisfiesRules(password)) {
+      if (!Paz.satisfiesRules(password, rules)) {
         hashSource = hash;
         continue;
       }
       break;
     }
     dbg(`Paz generated password in ${iteration} iterations.`);
-    return `${password}${addition}`;
+    return `${password}${addition} `;
   }
+}
+
+// src/poem.ts
+var poem = [
+  "Out of the Rolling Ocean the Crowd",
+  "When I Heard the Learn’d Astronomer",
+  "I Sing the Body Electric",
+  "I Dream’d in a Dream",
+  "The Ship Starting",
+  "On the Beach at Night Alone",
+  "Sometimes with One I Love",
+  "A Noiseless Patient Spider",
+  "Beginning My Studies",
+  "I Saw in Louisiana A Live-Oak Growing",
+  "In Paths Untrodden",
+  "As I Walk These Broad Majestic Days",
+  "Crossing Brooklyn Ferry",
+  "To the Garden the World",
+  "A Song to Myself"
+];
+function getPoemLine() {
+  const lineNumber = Math.floor(Math.random() * poem.length) + 1;
+  if (lineNumber < 1 || lineNumber > poem.length) {
+    throw new Error("Line number out of range");
+  }
+  return poem[lineNumber - 1] || "The quick brown fox jumps over the lazy dog.";
 }
 
 // src/RNG.ts
@@ -102,98 +195,6 @@ class RNG {
     this.seed = (a * seed + c) % m;
     return seed / m;
   }
-}
-
-// src/Special.ts
-class Special {
-  static replace(password, char, position) {
-    return password.substring(0, position) + char + password.substring(position + 1);
-  }
-  static rPositions(password, count) {
-    const rng = new RNG(password);
-    const positions = new Set;
-    while (positions.size < count) {
-      const pos = Math.floor(rng.get() * password.length);
-      positions.add(pos);
-    }
-    return Array.from(positions);
-  }
-  static rUpperChar(password) {
-    const rng = new RNG(password);
-    const char = 65 + Math.floor(rng.get() * 26);
-    return String.fromCharCode(char);
-  }
-  static rNumberChar(password) {
-    const rng = new RNG(password);
-    const char = 48 + Math.floor(rng.get() * 10);
-    return String.fromCharCode(char);
-  }
-  static rSpecialChar(password) {
-    const rng = new RNG(password);
-    const char = 33 + Math.floor(rng.get() * 15);
-    return String.fromCharCode(char);
-  }
-  static mNone(password) {
-    return password;
-  }
-  static mDefault(password) {
-    const upperCharCode = Special.rUpperChar(password);
-    const numberCharCode = Special.rNumberChar(password);
-    const specialCharCode = Special.rSpecialChar(password);
-    const rpos = Special.rPositions(password, 3);
-    password = Special.replace(password, upperCharCode, rpos[0]);
-    password = Special.replace(password, numberCharCode, rpos[1]);
-    password = Special.replace(password, specialCharCode, rpos[2]);
-    return password;
-  }
-  static mNumber(password) {
-    const numberCharCode = Special.rNumberChar(password);
-    const rpos = Special.rPositions(password, 1);
-    password = Special.replace(password, numberCharCode, rpos[0]);
-    return password;
-  }
-  static mSpecial(password) {
-    const specialCharCode = Special.rSpecialChar(password);
-    const rpos = Special.rPositions(password, 1);
-    password = Special.replace(password, specialCharCode, rpos[0]);
-    return password;
-  }
-  static modes = {
-    default: Special.mDefault,
-    number: Special.mNumber,
-    special: Special.mSpecial,
-    none: Special.mNone
-  };
-  static generate(password, mode) {
-    const func = Special.modes[mode] || Special.mNone;
-    return func(password);
-  }
-}
-
-// src/poem.ts
-var poem = [
-  "Out of the Rolling Ocean the Crowd",
-  "When I Heard the Learn’d Astronomer",
-  "I Sing the Body Electric",
-  "I Dream’d in a Dream",
-  "The Ship Starting",
-  "On the Beach at Night Alone",
-  "Sometimes with One I Love",
-  "A Noiseless Patient Spider",
-  "Beginning My Studies",
-  "I Saw in Louisiana A Live-Oak Growing",
-  "In Paths Untrodden",
-  "As I Walk These Broad Majestic Days",
-  "Crossing Brooklyn Ferry",
-  "To the Garden the World",
-  "A Song to Myself"
-];
-function getPoemLine() {
-  const lineNumber = Math.floor(Math.random() * poem.length) + 1;
-  if (lineNumber < 1 || lineNumber > poem.length) {
-    throw new Error("Line number out of range");
-  }
-  return poem[lineNumber - 1] || "The quick brown fox jumps over the lazy dog.";
 }
 
 // src/emoji.ts
@@ -325,9 +326,6 @@ class PazUI {
     } else {
       hash = "";
     }
-    if (hash !== "") {
-      hash = Special.generate(hash, site.special);
-    }
     dbg("Site data: " + JSON.stringify(site));
     dbg("Computed hash: " + hash);
     this.elements.hash.value = hash;
@@ -390,7 +388,7 @@ class PazUI {
   clearAll(compute, query) {
     this.elements.master.value = "";
     this.elements.site.value = "";
-    this.elements.special.value = "default";
+    this.elements.special.value = "all";
     this.elements.length.value = "16";
     this.elements.revision.value = "1";
     this.elements.master.placeholder = getPoemLine();

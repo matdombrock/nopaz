@@ -1,8 +1,7 @@
 import type { PazSite } from './types';
 
 import Paz from './Paz';
-import Special from './Special';
-import type { SpecialMode } from './types';
+import type { PazSpecialMode } from './types';
 import dbg from './dbg'
 import getPoemLine from './poem';
 import passphraseEmoji from './emoji';
@@ -160,7 +159,7 @@ class PazUI {
   private captureSite(): PazSite {
     return {
       siteId: this.elements.site.value,
-      special: this.elements.special.value as SpecialMode,
+      special: this.elements.special.value as PazSpecialMode,
       length: parseInt(this.elements.length.value, 10),
       revision: parseInt(this.elements.revision.value, 10),
       note: this.elements.notes.value,
@@ -189,11 +188,6 @@ class PazUI {
     }
     else {
       hash = '';
-    }
-
-    // Apply special
-    if (hash !== '') {
-      hash = Special.generate(hash, site.special);
     }
 
     dbg('Site data: ' + JSON.stringify(site));
@@ -279,7 +273,7 @@ class PazUI {
   private clearAll(compute: boolean, query: boolean): void {
     this.elements.master.value = '';
     this.elements.site.value = '';
-    this.elements.special.value = 'default';
+    this.elements.special.value = 'all';
     this.elements.length.value = '16';
     this.elements.revision.value = '1';
     this.elements.master.placeholder = getPoemLine();

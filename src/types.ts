@@ -1,8 +1,8 @@
-export type SpecialMode = 'default' | 'number' | 'special' | 'none';
+export type PazSpecialMode = 'all' | 'legacy' | 'none';
 
 export type PazSite = {
   siteId: string;
-  special: SpecialMode;
+  special: PazSpecialMode;
   length: number;
   revision: number;
   note: string;

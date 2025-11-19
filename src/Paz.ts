@@ -16,25 +16,29 @@ https://github.com/eblade/paz/tree/master?tab=readme-ov-file#the-algorithm-in-de
     Return <password>[addition]
 */
 
-import type { PazSite } from './types';
+import type { PazSpecialMode, PazSite } from './types';
 import dbg from './dbg';
 
-type PazChecks = {
-  hasUpper: boolean,
-  hasLower: boolean,
-  hasNumber: boolean,
-  noNumber: boolean,
-  startLower: boolean,
+type PazRules = {
+  noSymbol: boolean, // Do not generate symbols
+  hasSymbol: boolean, // Must have at least one symbol
+  hasUpper: boolean, // Must have at least one uppercase letter
+  hasLower: boolean, // Must have at least one lowercase letter
+  hasNumber: boolean, // Must have at least one number
+  noNumber: boolean, // Must not have any numbers
+  startLower: boolean, // Must start with a lowercase letter
 }
 
-type PazSpecialRules = {
-  [key: string]: PazChecks,
+type PazRulesMap = {
+  [key in PazSpecialMode]: PazRules;
 }
 
 export default class Paz {
 
-  private static specialRules: PazSpecialRules = {
+  private static specialRules: PazRulesMap = {
     all: {
+      noSymbol: false,
+      hasSymbol: true,
       hasUpper: true,
       hasLower: true,
       hasNumber: true,
@@ -42,6 +46,8 @@ export default class Paz {
       startLower: true,
     },
     legacy: {
+      noSymbol: true,
+      hasSymbol: false,
       hasUpper: true,
       hasLower: true,
       hasNumber: true,
@@ -49,6 +55,8 @@ export default class Paz {
       startLower: true,
     },
     none: {
+      noSymbol: false,
+      hasSymbol: false,
       hasUpper: false,
       hasLower: false,
       hasNumber: false,
@@ -57,22 +65,29 @@ export default class Paz {
     }
   };
 
-  private static customBase64Encode(buffer: ArrayBuffer): string {
+  private static customBase64Encode(buffer: ArrayBuffer, rules: PazRules): string {
     const bytes = new Uint8Array(buffer);
     let b64 = btoa(String.fromCharCode(...bytes));
-    // Replace '+' with '9', '/' with '8'
-    b64 = b64.replace(/\+/g, '9').replace(/\//g, '8');
-    // Replace padding '=' with 'A'
-    b64 = b64.replace(/=+$/, (match) => 'A'.repeat(match.length));
+    if (rules.noSymbol) {
+      // Replace '+' with '9', '/' with '8'
+      b64 = b64.replace(/\+/g, '9').replace(/\//g, '8');
+      // Replace padding '=' with 'A'
+      b64 = b64.replace(/=+$/, (match) => 'A'.repeat(match.length));
+    }
     return b64;
   }
 
-  private static satisfiesRules(password: string, rules: PazChecks): boolean {
+  private static satisfiesRules(password: string, rules: PazRules): boolean {
+    const hasSymbol = /[+/]/.test(password);
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const startLower = /^[a-z]/.test(password);
     let pass = true;
+    if (rules.hasSymbol && !hasSymbol) {
+      pass = false;
+      dbg('! Failed symbol check.');
+    }
     if (rules.hasUpper && !hasUpper) {
       pass = false;
       dbg('! Failed uppercase check.');
@@ -138,7 +153,7 @@ export default class Paz {
       const data = encoder.encode(hashSource);
       const hashBuffer = await crypto.subtle.digest(algorithm, data);
       // Custom base64 encode
-      const hash = Paz.customBase64Encode(hashBuffer);
+      const hash = Paz.customBase64Encode(hashBuffer, rules);
       // Cut hash to length
       password = hash.slice(0, passwordLength);
       dbg(`Iteration ${iteration}: password = ${password} `);

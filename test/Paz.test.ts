@@ -7,7 +7,7 @@ const site: PazSite = {
   length: 16,
   minIterations: 10,
   append: '...',
-  special: 'none',
+  special: 'all',
   revision: 1,
   note: 'Test site',
   algorithm: 'sha512',
