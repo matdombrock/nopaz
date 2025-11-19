@@ -121,6 +121,11 @@ bun run build
 - Append a string to the end of the password
 - Increases password length
 
+### alg - Algorithm
+- String
+- Selected algorithm
+- `sha256 | sha512`
+
 ### Example
 ```
 .../?ste=asd&spc=all&len=16&rev=1&nts=&mit=10&app=&alg=sha512
