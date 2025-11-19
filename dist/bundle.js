@@ -227,7 +227,8 @@ class PazUI {
     this.elements.append.addEventListener("input", () => this.computeHash());
     this.elements.algorithm.addEventListener("input", () => this.computeHash());
     this.clearAll(false, false);
-    const urlParams = this.getQueryParams();
+    this.getSiteQueryParams();
+    const urlParams = new URLSearchParams(window.location.search);
     const advanced = urlParams.get("adv") === "1";
     if (advanced) {
       this.elements.uiAdvancedContainer.style.display = "block";
@@ -235,38 +236,13 @@ class PazUI {
       this.elements.uiAdvancedContainer.style.display = "none";
     }
     this.elements.master.focus();
-    this.elements.btnExtras.addEventListener("click", () => {
-      if (this.elements.uiExtrasContainer.style.display === "none" || this.elements.uiExtrasContainer.style.display === "") {
-        this.elements.uiExtrasContainer.style.display = "block";
-        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
-      } else {
-        this.elements.uiExtrasContainer.style.display = "none";
-        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
-      }
-    });
-    this.elements.hash.addEventListener("click", () => {
-      if (!this.elements.hash.value || this.elements.hash.value === "") {
-        return;
-      }
-      this.elements.hash.select();
-      document.execCommand("copy");
-      this.elements.tipClipBtn.innerHTML = `
-        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>`;
-      this.elements.tipClipBtn.style.display = "block";
-    });
-    this.elements.btnBookmark.addEventListener("click", () => {
-      const site = this.captureSite();
-      const url = this.updateQueryParams(site);
-      navigator.clipboard.writeText(url.toString());
-      this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
-      <br><br>
-      Use ctrl/cmd + D to bookmark it in your browser!`;
-      this.elements.tipClip.style.display = "block";
-    });
+    this.elements.btnExtras.addEventListener("click", () => this.toggleExtras());
+    this.elements.hash.addEventListener("click", () => this.copyHash());
+    this.elements.btnBookmark.addEventListener("click", () => this.bookmark());
     this.elements.btnReset.addEventListener("click", () => this.clearAll(true, true));
     this.elements.btnView.addEventListener("click", () => this.toggleView());
   }
-  getQueryParams() {
+  getSiteQueryParams() {
     const urlParams = new URLSearchParams(window.location.search);
     this.elements.site.value = urlParams.get("site") || this.elements.site.value;
     this.elements.special.value = urlParams.get("special") || this.elements.special.value;
@@ -276,9 +252,8 @@ class PazUI {
     this.elements.minIterations.value = urlParams.get("minIterations") || this.elements.minIterations.value;
     this.elements.append.value = urlParams.get("append") || this.elements.append.value;
     this.elements.algorithm.value = urlParams.get("algorithm") || this.elements.algorithm.value;
-    return urlParams;
   }
-  updateQueryParams(site) {
+  updateSiteQueryParams(site) {
     const url = new URL(window.location.href);
     url.searchParams.set("site", site.siteId);
     url.searchParams.set("special", site.special);
@@ -288,9 +263,8 @@ class PazUI {
     url.searchParams.set("minIterations", site.minIterations.toString());
     url.searchParams.set("append", site.append);
     url.searchParams.set("algorithm", site.algorithm);
-    return url;
   }
-  clearQueryParams() {
+  clearSiteQueryParams() {
     const url = new URL(window.location.href);
     url.searchParams.delete("site");
     url.searchParams.delete("special");
@@ -337,7 +311,8 @@ class PazUI {
     console.log("Computed hash:", hash);
     this.elements.hash.value = hash;
     this.elements.tipClip.style.display = "none";
-    const url = this.updateQueryParams(site);
+    this.updateSiteQueryParams(site);
+    const url = new URL(window.location.href);
     window.history.replaceState({}, "", url.toString());
   }
   toggleView() {
@@ -361,15 +336,34 @@ class PazUI {
       }
     }
   }
-  showTip(elementId) {
-    const element = document.getElementById(elementId);
-    if (!element)
+  copyHash() {
+    if (!this.elements.hash.value || this.elements.hash.value === "") {
       return;
-    if (element.style.display === "none" || element.style.display === "") {
-      element.style.display = "block";
-    } else {
-      element.style.display = "none";
     }
+    this.elements.hash.select();
+    document.execCommand("copy");
+    this.elements.tipClipBtn.innerHTML = `
+        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>`;
+    this.elements.tipClipBtn.style.display = "block";
+  }
+  toggleExtras() {
+    if (this.elements.uiExtrasContainer.style.display === "none" || this.elements.uiExtrasContainer.style.display === "") {
+      this.elements.uiExtrasContainer.style.display = "block";
+      this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+    } else {
+      this.elements.uiExtrasContainer.style.display = "none";
+      this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+    }
+  }
+  bookmark() {
+    const site = this.captureSite();
+    this.updateSiteQueryParams(site);
+    const url = new URL(window.location.href);
+    navigator.clipboard.writeText(url.toString());
+    this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
+      <br><br>
+      Use ctrl/cmd + D to bookmark it in your browser!`;
+    this.elements.tipClip.style.display = "block";
   }
   clearAll(compute, query) {
     this.elements.master.value = "";
@@ -390,7 +384,17 @@ class PazUI {
       this.computeHash();
     }
     if (query) {
-      this.clearQueryParams();
+      this.clearSiteQueryParams();
+    }
+  }
+  showTip(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element)
+      return;
+    if (element.style.display === "none" || element.style.display === "") {
+      element.style.display = "block";
+    } else {
+      element.style.display = "none";
     }
   }
   clear(elementId) {

@@ -5,6 +5,7 @@ import Special from './Special';
 import type { SpecialMode } from './types';
 import getPoemLine from './poem';
 
+// A list of all UI elements controlled by PazUI
 type PazUIElements = {
   master: HTMLInputElement;
   site: HTMLInputElement;
@@ -33,9 +34,12 @@ type PazUIElements = {
 
 class PazUI {
   private elements: PazUIElements;
+
+  // UI state
   private state = {
     hidden: false,
   }
+
   constructor() {
     this.elements = {
       master: document.getElementById('in-master') as HTMLInputElement,
@@ -74,8 +78,9 @@ class PazUI {
     this.clearAll(false, false);
 
     // Check query parameters
-    const urlParams = this.getQueryParams();
+    this.getSiteQueryParams();
 
+    const urlParams = new URLSearchParams(window.location.search);
     // Check for advanced mode
     const advanced = urlParams.get('adv') === '1';
     if (advanced) {
@@ -87,38 +92,13 @@ class PazUI {
     this.elements.master.focus();
 
     // Toggle extras
-    this.elements.btnExtras.addEventListener('click', () => {
-      if (this.elements.uiExtrasContainer.style.display === 'none' || this.elements.uiExtrasContainer.style.display === '') {
-        this.elements.uiExtrasContainer.style.display = 'block';
-        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
-      } else {
-        this.elements.uiExtrasContainer.style.display = 'none';
-        this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
-      }
-    });
+    this.elements.btnExtras.addEventListener('click', () => this.toggleExtras());
 
     // Copy hash to clipboard
-    this.elements.hash.addEventListener('click', () => {
-      if (!this.elements.hash.value || this.elements.hash.value === '') {
-        return
-      };
-      this.elements.hash.select();
-      document.execCommand('copy');
-      this.elements.tipClipBtn.innerHTML = `
-        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>`;
-      this.elements.tipClipBtn.style.display = 'block';
-    });
+    this.elements.hash.addEventListener('click', () => this.copyHash());
 
     // Bookmark site settings
-    this.elements.btnBookmark.addEventListener('click', () => {
-      const site = this.captureSite();
-      const url = this.updateQueryParams(site);
-      navigator.clipboard.writeText(url.toString());
-      this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
-      <br><br>
-      Use ctrl/cmd + D to bookmark it in your browser!`;
-      this.elements.tipClip.style.display = 'block';
-    });
+    this.elements.btnBookmark.addEventListener('click', () => this.bookmark());
 
     // Clear inputs
     this.elements.btnReset.addEventListener('click', () => this.clearAll(true, true));
@@ -126,7 +106,10 @@ class PazUI {
     // Toggle view
     this.elements.btnView.addEventListener('click', () => this.toggleView());
   }
-  private getQueryParams(): URLSearchParams {
+
+  // Get site parameters from URL query parameters
+  // and populate the input fields
+  private getSiteQueryParams(): void {
     const urlParams = new URLSearchParams(window.location.search);
     this.elements.site.value = urlParams.get('site') || this.elements.site.value;
     this.elements.special.value = urlParams.get('special') || this.elements.special.value;
@@ -136,9 +119,11 @@ class PazUI {
     this.elements.minIterations.value = urlParams.get('minIterations') || this.elements.minIterations.value;
     this.elements.append.value = urlParams.get('append') || this.elements.append.value;
     this.elements.algorithm.value = urlParams.get('algorithm') || this.elements.algorithm.value;
-    return urlParams;
   }
-  private updateQueryParams(site: PazSite): URL {
+
+  // Update URL query parameters with current site settings
+  // without reloading the page
+  private updateSiteQueryParams(site: PazSite): void {
     const url = new URL(window.location.href);
     url.searchParams.set('site', site.siteId);
     url.searchParams.set('special', site.special);
@@ -148,9 +133,10 @@ class PazUI {
     url.searchParams.set('minIterations', site.minIterations.toString());
     url.searchParams.set('append', site.append);
     url.searchParams.set('algorithm', site.algorithm);
-    return url;
   }
-  private clearQueryParams(): void {
+
+  // Clear site-related URL query parameters
+  private clearSiteQueryParams(): void {
     const url = new URL(window.location.href);
     url.searchParams.delete('site');
     url.searchParams.delete('special');
@@ -162,6 +148,8 @@ class PazUI {
     url.searchParams.delete('algorithm');
     window.history.replaceState({}, '', url.toString());
   }
+
+  // Capture current site settings from input fields
   private captureSite(): PazSite {
     return {
       siteId: this.elements.site.value,
@@ -174,6 +162,8 @@ class PazUI {
       append: this.elements.append.value,
     };
   }
+
+  // Compute the password hash and update the output field
   private async computeHash(): Promise<void> {
     console.log('Computing hash...');
     const site = this.captureSite();
@@ -206,14 +196,13 @@ class PazUI {
     this.elements.tipClip.style.display = 'none';
 
     // Set the URL query parameters
-    const url = this.updateQueryParams(site);
+    this.updateSiteQueryParams(site);
+    const url = new URL(window.location.href);
     window.history.replaceState({}, '', url.toString());
   }
+
+  // Toggle visibility of master passphrase and hash
   private toggleView(): void {
-    // this.elements.master.type = this.elements.master.type === 'password' ? 'text' : 'password';
-
-    // this.elements.hash.type = this.elements.hash.type === 'password' ? 'text' : 'password';
-
     let hidden = this.state.hidden;
     hidden = !hidden;
     this.state.hidden = hidden;
@@ -240,16 +229,43 @@ class PazUI {
       }
     }
   }
-  public showTip(elementId: string): void {
-    const element = document.getElementById(elementId);
-    if (!element) return;
-    if (element.style.display === 'none' || element.style.display === '') {
-      element.style.display = 'block';
-    }
-    else {
-      element.style.display = 'none';
+
+  // Copy computed hash to clipboard
+  private copyHash(): void {
+    if (!this.elements.hash.value || this.elements.hash.value === '') {
+      return
+    };
+    this.elements.hash.select();
+    document.execCommand('copy');
+    this.elements.tipClipBtn.innerHTML = `
+        <strong><i class="fa-solid fa-circle-check"></i> Password copied to clipboard!</strong>`;
+    this.elements.tipClipBtn.style.display = 'block';
+  }
+
+  // Toggle visibility of extras container
+  private toggleExtras(): void {
+    if (this.elements.uiExtrasContainer.style.display === 'none' || this.elements.uiExtrasContainer.style.display === '') {
+      this.elements.uiExtrasContainer.style.display = 'block';
+      this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+    } else {
+      this.elements.uiExtrasContainer.style.display = 'none';
+      this.elements.btnExtrasArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
     }
   }
+
+  // Bookmark current site settings by creating a URL
+  private bookmark(): void {
+    const site = this.captureSite();
+    this.updateSiteQueryParams(site);
+    const url = new URL(window.location.href);
+    navigator.clipboard.writeText(url.toString());
+    this.elements.tipClip.innerHTML = `<i class="fa-solid fa-circle-check"></i> Bookmark URL copied to clipboard.
+      <br><br>
+      Use ctrl/cmd + D to bookmark it in your browser!`;
+    this.elements.tipClip.style.display = 'block';
+  }
+
+  // Clear all input fields and reset to default values
   private clearAll(compute: boolean, query: boolean): void {
     this.elements.master.value = '';
     this.elements.site.value = '';
@@ -271,9 +287,23 @@ class PazUI {
     }
     // Clear query parameters
     if (query) {
-      this.clearQueryParams();
+      this.clearSiteQueryParams();
     }
   }
+
+  // Show or hide a tip element by its ID
+  public showTip(elementId: string): void {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    if (element.style.display === 'none' || element.style.display === '') {
+      element.style.display = 'block';
+    }
+    else {
+      element.style.display = 'none';
+    }
+  }
+
+  // Clear the value of an input element by its ID
   public clear(elementId: string): void {
     const element = document.getElementById(elementId) as HTMLInputElement;
     if (element) {
