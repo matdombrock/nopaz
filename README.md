@@ -23,6 +23,41 @@
 > 
 > Configurations are stored as bookmarks which can be kept in your browser or a note taking app.
 
+
+## Overview
+**Purpose:**
+The NOPAZ algorithm generates strong, unique passwords for different sites or services using a single master password. It ensures that each password meets customizable complexity requirements (such as character types and length) and can be reproduced exactly given the same inputs. This approach eliminates the need to remember multiple passwords and enhances security by preventing password reuse.
+
+**Functionality:**
+
+1. **Source Construction:**  
+   The algorithm starts by constructing a "source" string in the format `<master>:<site>[revision]`, where:
+   - `<master>` is the user's master password.
+   - `<site>` is a site identifier (e.g., domain or service name).
+   - `[revision]` is an optional integer to allow password rotation; zero and negative values are ignored.
+
+2. **Hashing and Encoding:**  
+   - The source string is hashed using a cryptographic hash function (SHA-512 or SHA-256).
+   - The resulting hash is base64-encoded with custom modifications:
+     - If symbols are disallowed, '+' is replaced with '9', '/' with '8', and padding '=' with 'A'.
+
+3. **Password Extraction:**  
+   - The encoded hash is truncated to the desired password length.
+
+4. **Iteration and Recursion:**  
+   - The algorithm may repeat the hashing process multiple times (controlled by `minIterations`) to increase computational cost.
+   - If the password does not meet the required rules (e.g., must contain uppercase, lowercase, numbers, start with a lowercase letter, etc.), the process recurses: the hash becomes the new source, and hashing repeats until all rules are satisfied.
+
+5. **Rule Enforcement:**  
+   - Rules are defined per "special mode" (e.g., `all`, `legacy`, `none`) and include requirements for symbols, uppercase, lowercase, numbers, and starting character.
+   - The password is checked against these rules after each iteration.
+
+6. **Final Output:**  
+   - Once a password satisfies all rules and minimum iterations, it is returned, optionally with an appended string.
+
+This algorithm provides a reproducible, secure way to generate passwords that conform to site-specific requirements, using a master password and site identifier as inputs. It is especially useful for password managers or tools that need to generate passwords on-the-fly without storing them.
+
+
 ## Bun
 This project is built with `bun` a super fast NodeJS/TSC/NPM/Bundler alternative written in Zig. 
 
@@ -54,34 +89,34 @@ bun run build
 
 ## Query Parameters
 
-### ste
+### ste - Site
 - String
 - Site identifier
 - `example.com` or `my special site`
 
-### spc
+### spc - Special
 - String
 - Special rules for password generation
 - `all | legacy | none`
 
-### len
+### len - Length
 - Number
 - Password length
 
-### rev
+### rev - Revision
 - Number
 - Password revision number
 
-### nts
+### nts - Notes
 - String
 - URL encoded notes 
 - Can contain multiple lines 
 
-### mit
+### mit - Minimum Iterations
 - Number
 - Minimum hashing iterations.
 
-### app
+### app - Append
 - String
 - Append a string to the end of the password
 - Increases password length
